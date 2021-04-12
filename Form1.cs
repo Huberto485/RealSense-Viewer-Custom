@@ -17,5 +17,9 @@ namespace RealSense_Viewer_Custom
             InitializeComponent();
         }
 
+        private void label1_Click(object sender, EventArgs e)
+        {
+
+        }
     }
 }

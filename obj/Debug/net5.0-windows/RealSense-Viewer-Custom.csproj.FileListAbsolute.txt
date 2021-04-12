@@ -16,3 +16,5 @@ D:\Program Files\VS Community Workspace\RealSense-Viewer-Custom\obj\Debug\net5.0
 D:\Program Files\VS Community Workspace\RealSense-Viewer-Custom\obj\Debug\net5.0-windows\ref\RealSense-Viewer-Custom.dll
 D:\Program Files\VS Community Workspace\RealSense-Viewer-Custom\obj\Debug\net5.0-windows\RealSense-Viewer-Custom.pdb
 D:\Program Files\VS Community Workspace\RealSense-Viewer-Custom\obj\Debug\net5.0-windows\RealSense-Viewer-Custom.genruntimeconfig.cache
+D:\Program Files\VS Community Workspace\RealSense-Viewer-Custom\bin\Debug\net5.0-windows\Intel.Realsense.dll
+D:\Program Files\VS Community Workspace\RealSense-Viewer-Custom\obj\Debug\net5.0-windows\RealSense-Viewer-Custom.csproj.CopyComplete

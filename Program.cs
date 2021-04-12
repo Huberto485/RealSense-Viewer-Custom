@@ -14,6 +14,7 @@ namespace RealSense_Viewer_Custom
         [STAThread]
         static void Main()
         {
+            Console.Write("Hello");
             Application.SetHighDpiMode(HighDpiMode.SystemAware);
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);

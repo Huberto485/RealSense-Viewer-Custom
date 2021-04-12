@@ -7,8 +7,19 @@
   "targets": {
     ".NETCoreApp,Version=v5.0": {
       "RealSense-Viewer-Custom/1.0.0": {
+        "dependencies": {
+          "Intel.Realsense": "2.43.0.0"
+        },
         "runtime": {
           "RealSense-Viewer-Custom.dll": {}
+        }
+      },
+      "Intel.Realsense/2.43.0.0": {
+        "runtime": {
+          "Intel.Realsense.dll": {
+            "assemblyVersion": "2.43.0.0",
+            "fileVersion": "2.43.0.3013"
+          }
         }
       }
     }
@@ -16,6 +27,11 @@
   "libraries": {
     "RealSense-Viewer-Custom/1.0.0": {
       "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "Intel.Realsense/2.43.0.0": {
+      "type": "reference",
       "serviceable": false,
       "sha512": ""
     }
