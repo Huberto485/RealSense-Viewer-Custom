@@ -52,7 +52,7 @@ namespace RealSense_Viewer_Custom
             // 
             // pictureBox1
             // 
-            this.pictureBox1.BackColor = System.Drawing.Color.Gainsboro;
+            this.pictureBox1.BackColor = System.Drawing.Color.GhostWhite;
             this.pictureBox1.Location = new System.Drawing.Point(318, 27);
             this.pictureBox1.Name = "pictureBox1";
             this.pictureBox1.Size = new System.Drawing.Size(678, 536);
@@ -148,7 +148,7 @@ namespace RealSense_Viewer_Custom
             // label4
             // 
             this.label4.AutoSize = true;
-            this.label4.BackColor = System.Drawing.Color.Gainsboro;
+            this.label4.BackColor = System.Drawing.Color.GhostWhite;
             this.label4.ForeColor = System.Drawing.SystemColors.ActiveCaptionText;
             this.label4.Location = new System.Drawing.Point(331, 37);
             this.label4.Name = "label4";
@@ -196,7 +196,7 @@ namespace RealSense_Viewer_Custom
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.BackColor = System.Drawing.Color.White;
+            this.BackColor = System.Drawing.Color.GhostWhite;
             this.ClientSize = new System.Drawing.Size(1008, 592);
             this.Controls.Add(this.label4);
             this.Controls.Add(this.label3);
