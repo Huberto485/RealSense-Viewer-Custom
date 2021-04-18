@@ -31,14 +31,14 @@ namespace RealSense_Viewer_Custom
         {
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this.label1 = new System.Windows.Forms.Label();
-            this.button1 = new System.Windows.Forms.Button();
-            this.button2 = new System.Windows.Forms.Button();
-            this.button3 = new System.Windows.Forms.Button();
-            this.button4 = new System.Windows.Forms.Button();
-            this.button5 = new System.Windows.Forms.Button();
-            this.label2 = new System.Windows.Forms.Label();
+            this.buttonPlay = new System.Windows.Forms.Button();
+            this.buttonRecord = new System.Windows.Forms.Button();
+            this.buttonPause = new System.Windows.Forms.Button();
+            this.buttonPicture = new System.Windows.Forms.Button();
+            this.buttonLoad = new System.Windows.Forms.Button();
+            this.labelFileName = new System.Windows.Forms.Label();
             this.label3 = new System.Windows.Forms.Label();
-            this.label4 = new System.Windows.Forms.Label();
+            this.labelConnect = new System.Windows.Forms.Label();
             this.pictureBox2 = new System.Windows.Forms.PictureBox();
             this.pictureBox3 = new System.Windows.Forms.PictureBox();
             this.pictureBox4 = new System.Windows.Forms.PictureBox();
@@ -71,68 +71,68 @@ namespace RealSense_Viewer_Custom
             this.label1.Text = "File Menu";
             this.label1.Click += new System.EventHandler(this.label1_Click);
             // 
-            // button1
+            // buttonPlay
             // 
-            this.button1.BackColor = System.Drawing.SystemColors.Control;
-            this.button1.Location = new System.Drawing.Point(627, 529);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(75, 23);
-            this.button1.TabIndex = 2;
-            this.button1.Text = "Play";
-            this.button1.UseVisualStyleBackColor = false;
+            this.buttonPlay.BackColor = System.Drawing.SystemColors.Control;
+            this.buttonPlay.Location = new System.Drawing.Point(627, 529);
+            this.buttonPlay.Name = "buttonPlay";
+            this.buttonPlay.Size = new System.Drawing.Size(75, 23);
+            this.buttonPlay.TabIndex = 2;
+            this.buttonPlay.Text = "Play";
+            this.buttonPlay.UseVisualStyleBackColor = false;
             // 
-            // button2
+            // buttonRecord
             // 
-            this.button2.BackColor = System.Drawing.SystemColors.Control;
-            this.button2.Location = new System.Drawing.Point(546, 529);
-            this.button2.Name = "button2";
-            this.button2.Size = new System.Drawing.Size(75, 23);
-            this.button2.TabIndex = 3;
-            this.button2.Text = "Record";
-            this.button2.UseVisualStyleBackColor = false;
+            this.buttonRecord.BackColor = System.Drawing.SystemColors.Control;
+            this.buttonRecord.Location = new System.Drawing.Point(546, 529);
+            this.buttonRecord.Name = "buttonRecord";
+            this.buttonRecord.Size = new System.Drawing.Size(75, 23);
+            this.buttonRecord.TabIndex = 3;
+            this.buttonRecord.Text = "Record";
+            this.buttonRecord.UseVisualStyleBackColor = false;
             // 
-            // button3
+            // buttonPause
             // 
-            this.button3.BackColor = System.Drawing.SystemColors.Control;
-            this.button3.Location = new System.Drawing.Point(708, 529);
-            this.button3.Name = "button3";
-            this.button3.Size = new System.Drawing.Size(75, 23);
-            this.button3.TabIndex = 4;
-            this.button3.Text = "Pause";
-            this.button3.UseVisualStyleBackColor = false;
+            this.buttonPause.BackColor = System.Drawing.SystemColors.Control;
+            this.buttonPause.Location = new System.Drawing.Point(708, 529);
+            this.buttonPause.Name = "buttonPause";
+            this.buttonPause.Size = new System.Drawing.Size(75, 23);
+            this.buttonPause.TabIndex = 4;
+            this.buttonPause.Text = "Pause";
+            this.buttonPause.UseVisualStyleBackColor = false;
             // 
-            // button4
+            // buttonPicture
             // 
-            this.button4.BackColor = System.Drawing.SystemColors.Control;
-            this.button4.Location = new System.Drawing.Point(331, 529);
-            this.button4.Name = "button4";
-            this.button4.Size = new System.Drawing.Size(91, 23);
-            this.button4.TabIndex = 5;
-            this.button4.Text = "Take Picture";
-            this.button4.UseVisualStyleBackColor = false;
+            this.buttonPicture.BackColor = System.Drawing.SystemColors.Control;
+            this.buttonPicture.Location = new System.Drawing.Point(331, 529);
+            this.buttonPicture.Name = "buttonPicture";
+            this.buttonPicture.Size = new System.Drawing.Size(91, 23);
+            this.buttonPicture.TabIndex = 5;
+            this.buttonPicture.Text = "Take Picture";
+            this.buttonPicture.UseVisualStyleBackColor = false;
             // 
-            // button5
+            // buttonLoad
             // 
-            this.button5.BackColor = System.Drawing.SystemColors.Control;
-            this.button5.Location = new System.Drawing.Point(22, 52);
-            this.button5.Name = "button5";
-            this.button5.Size = new System.Drawing.Size(75, 23);
-            this.button5.TabIndex = 6;
-            this.button5.Text = "Load File";
-            this.button5.UseVisualStyleBackColor = false;
-            this.button5.Click += new System.EventHandler(this.button5_Click);
+            this.buttonLoad.BackColor = System.Drawing.SystemColors.Control;
+            this.buttonLoad.Location = new System.Drawing.Point(22, 52);
+            this.buttonLoad.Name = "buttonLoad";
+            this.buttonLoad.Size = new System.Drawing.Size(75, 23);
+            this.buttonLoad.TabIndex = 6;
+            this.buttonLoad.Text = "Load File";
+            this.buttonLoad.UseVisualStyleBackColor = false;
+            this.buttonLoad.Click += new System.EventHandler(this.buttonLoad_Click);
             // 
-            // label2
+            // labelFileName
             // 
-            this.label2.AutoSize = true;
-            this.label2.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(128)))), ((int)(((byte)(106)))), ((int)(((byte)(200)))));
-            this.label2.ForeColor = System.Drawing.SystemColors.ActiveCaptionText;
-            this.label2.Location = new System.Drawing.Point(103, 56);
-            this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(68, 15);
-            this.label2.TabIndex = 7;
-            this.label2.Text = "Current File";
-            this.label2.Click += new System.EventHandler(this.label2_Click);
+            this.labelFileName.AutoSize = true;
+            this.labelFileName.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(128)))), ((int)(((byte)(106)))), ((int)(((byte)(200)))));
+            this.labelFileName.ForeColor = System.Drawing.SystemColors.ActiveCaptionText;
+            this.labelFileName.Location = new System.Drawing.Point(103, 56);
+            this.labelFileName.Name = "labelFileName";
+            this.labelFileName.Size = new System.Drawing.Size(68, 15);
+            this.labelFileName.TabIndex = 7;
+            this.labelFileName.Text = "Current File";
+            this.labelFileName.Click += new System.EventHandler(this.label2_Click);
             // 
             // label3
             // 
@@ -145,16 +145,16 @@ namespace RealSense_Viewer_Custom
             this.label3.TabIndex = 8;
             this.label3.Text = "Camera Settings";
             // 
-            // label4
+            // labelConnect
             // 
-            this.label4.AutoSize = true;
-            this.label4.BackColor = System.Drawing.Color.GhostWhite;
-            this.label4.ForeColor = System.Drawing.SystemColors.ActiveCaptionText;
-            this.label4.Location = new System.Drawing.Point(331, 37);
-            this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(88, 15);
-            this.label4.TabIndex = 9;
-            this.label4.Text = "Not Connected";
+            this.labelConnect.AutoSize = true;
+            this.labelConnect.BackColor = System.Drawing.Color.GhostWhite;
+            this.labelConnect.ForeColor = System.Drawing.SystemColors.ActiveCaptionText;
+            this.labelConnect.Location = new System.Drawing.Point(331, 37);
+            this.labelConnect.Name = "labelConnect";
+            this.labelConnect.Size = new System.Drawing.Size(88, 15);
+            this.labelConnect.TabIndex = 9;
+            this.labelConnect.Text = "Not Connected";
             // 
             // pictureBox2
             // 
@@ -198,14 +198,14 @@ namespace RealSense_Viewer_Custom
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.GhostWhite;
             this.ClientSize = new System.Drawing.Size(1008, 592);
-            this.Controls.Add(this.label4);
+            this.Controls.Add(this.labelConnect);
             this.Controls.Add(this.label3);
-            this.Controls.Add(this.label2);
-            this.Controls.Add(this.button5);
-            this.Controls.Add(this.button4);
-            this.Controls.Add(this.button3);
-            this.Controls.Add(this.button2);
-            this.Controls.Add(this.button1);
+            this.Controls.Add(this.labelFileName);
+            this.Controls.Add(this.buttonLoad);
+            this.Controls.Add(this.buttonPicture);
+            this.Controls.Add(this.buttonPause);
+            this.Controls.Add(this.buttonRecord);
+            this.Controls.Add(this.buttonPlay);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.pictureBox1);
             this.Controls.Add(this.pictureBox2);
@@ -227,20 +227,31 @@ namespace RealSense_Viewer_Custom
 
         #endregion
 
-        private System.Windows.Forms.PictureBox pictureBox1;
-        private System.Windows.Forms.Label label1;
-        private System.Windows.Forms.Button button1;
-        private System.Windows.Forms.Button button2;
-        private System.Windows.Forms.Button button3;
-        private System.Windows.Forms.Button button4;
+        /// <summary>
+        /// Window elements of the app.
+        /// </summary>
+
+        /// Buttons  
+        private System.Windows.Forms.Button buttonPlay;
+        private System.Windows.Forms.Button buttonRecord;
+        private System.Windows.Forms.Button buttonPause;
+        private System.Windows.Forms.Button buttonPicture;
         private System.Windows.Forms.Button button5;
-        private System.Windows.Forms.Label label2;
+
+        /// Labels
+        private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.Label labelFileName;
         private System.Windows.Forms.Label label3;
-        private System.Windows.Forms.Label label4;
+        private System.Windows.Forms.Label labelConnect;
+
+
+        /// Images
+        private System.Windows.Forms.PictureBox pictureBox1;
         private System.Windows.Forms.PictureBox pictureBox2;
         private System.Windows.Forms.PictureBox pictureBox3;
         private System.Windows.Forms.PictureBox pictureBox4;
         private System.Windows.Forms.PictureBox pictureBox5;
+        private System.Windows.Forms.Button buttonLoad;
     }
 }
 

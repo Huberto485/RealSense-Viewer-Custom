@@ -1,11 +1,63 @@
 {
   "version": 3,
   "targets": {
-    "net5.0-windows7.0": {}
+    "net5.0-windows7.0": {
+      "libpxcclr.cs/10.0.26.400": {
+        "type": "package",
+        "compile": {
+          "lib/net40/libpxcclr.cs.dll": {}
+        },
+        "runtime": {
+          "lib/net40/libpxcclr.cs.dll": {}
+        }
+      },
+      "sharpsenses.realsense/0.10.0": {
+        "type": "package",
+        "dependencies": {
+          "libpxcclr.cs": "10.0.26.400"
+        },
+        "compile": {
+          "lib/net45/SharpSenses.RealSense.dll": {},
+          "lib/net45/SharpSenses.dll": {}
+        },
+        "runtime": {
+          "lib/net45/SharpSenses.RealSense.dll": {},
+          "lib/net45/SharpSenses.dll": {}
+        }
+      }
+    }
   },
-  "libraries": {},
+  "libraries": {
+    "libpxcclr.cs/10.0.26.400": {
+      "sha512": "Z/6dnn2eG74XHTcLdo8O6nW4RZBg5BkLyFc2te50I566hF+l484ZWf+0/ZNdQkbwL7pKlAA3ZJCI3P6HDKMdPw==",
+      "type": "package",
+      "path": "libpxcclr.cs/10.0.26.400",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "lib/net40/libpxcclr.cs.dll",
+        "libpxcclr.cs.10.0.26.400.nupkg.sha512",
+        "libpxcclr.cs.nuspec"
+      ]
+    },
+    "sharpsenses.realsense/0.10.0": {
+      "sha512": "afPk3PA/aKZJGsAnW/T58R32+2u/psToc38yyVP+NEUhU651WDj9rgajf2oUUx6ms2dZztz1GC3o1k/TXupwsA==",
+      "type": "package",
+      "path": "sharpsenses.realsense/0.10.0",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "lib/net45/SharpSenses.RealSense.dll",
+        "lib/net45/SharpSenses.dll",
+        "sharpsenses.realsense.0.10.0.nupkg.sha512",
+        "sharpsenses.realsense.nuspec"
+      ]
+    }
+  },
   "projectFileDependencyGroups": {
-    "net5.0-windows7.0": []
+    "net5.0-windows7.0": [
+      "sharpsenses.realsense >= 0.10.0"
+    ]
   },
   "packageFolders": {
     "C:\\Users\\Adam\\.nuget\\packages\\": {},
@@ -49,6 +101,12 @@
     "frameworks": {
       "net5.0-windows7.0": {
         "targetAlias": "net5.0-windows",
+        "dependencies": {
+          "sharpsenses.realsense": {
+            "target": "Package",
+            "version": "[0.10.0, )"
+          }
+        },
         "imports": [
           "net461",
           "net462",
@@ -70,5 +128,27 @@
         "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\5.0.202\\RuntimeIdentifierGraph.json"
       }
     }
-  }
+  },
+  "logs": [
+    {
+      "code": "NU1701",
+      "level": "Warning",
+      "warningLevel": 1,
+      "message": "Package 'libpxcclr.cs 10.0.26.400' was restored using '.NETFramework,Version=v4.6.1, .NETFramework,Version=v4.6.2, .NETFramework,Version=v4.7, .NETFramework,Version=v4.7.1, .NETFramework,Version=v4.7.2, .NETFramework,Version=v4.8' instead of the project target framework 'net5.0-windows7.0'. This package may not be fully compatible with your project.",
+      "libraryId": "libpxcclr.cs",
+      "targetGraphs": [
+        "net5.0-windows7.0"
+      ]
+    },
+    {
+      "code": "NU1701",
+      "level": "Warning",
+      "warningLevel": 1,
+      "message": "Package 'sharpsenses.realsense 0.10.0' was restored using '.NETFramework,Version=v4.6.1, .NETFramework,Version=v4.6.2, .NETFramework,Version=v4.7, .NETFramework,Version=v4.7.1, .NETFramework,Version=v4.7.2, .NETFramework,Version=v4.8' instead of the project target framework 'net5.0-windows7.0'. This package may not be fully compatible with your project.",
+      "libraryId": "sharpsenses.realsense",
+      "targetGraphs": [
+        "net5.0-windows7.0"
+      ]
+    }
+  ]
 }

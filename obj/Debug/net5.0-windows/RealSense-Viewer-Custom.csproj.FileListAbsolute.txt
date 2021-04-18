@@ -19,3 +19,6 @@ D:\Program Files\VS Community Workspace\RealSense-Viewer-Custom\obj\Debug\net5.0
 D:\Program Files\VS Community Workspace\RealSense-Viewer-Custom\bin\Debug\net5.0-windows\Intel.Realsense.dll
 D:\Program Files\VS Community Workspace\RealSense-Viewer-Custom\obj\Debug\net5.0-windows\RealSense-Viewer-Custom.csproj.CopyComplete
 D:\Program Files\VS Community Workspace\RealSense-Viewer-Custom\obj\Debug\net5.0-windows\RealSense_Viewer_Custom.Properties.Resources.resources
+D:\Program Files\VS Community Workspace\RealSense-Viewer-Custom\bin\Debug\net5.0-windows\libpxcclr.cs.dll
+D:\Program Files\VS Community Workspace\RealSense-Viewer-Custom\bin\Debug\net5.0-windows\SharpSenses.RealSense.dll
+D:\Program Files\VS Community Workspace\RealSense-Viewer-Custom\bin\Debug\net5.0-windows\SharpSenses.dll
