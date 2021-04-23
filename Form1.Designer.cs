@@ -110,6 +110,7 @@ namespace RealSense_Viewer_Custom
             this.buttonPicture.TabIndex = 5;
             this.buttonPicture.Text = "Take Picture";
             this.buttonPicture.UseVisualStyleBackColor = false;
+            this.buttonPicture.Click += new System.EventHandler(this.buttonPicture_Click);
             // 
             // buttonLoad
             // 

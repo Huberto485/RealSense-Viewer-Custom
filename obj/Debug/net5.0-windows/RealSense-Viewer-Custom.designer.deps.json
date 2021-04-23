@@ -5,46 +5,7 @@
   },
   "compilationOptions": {},
   "targets": {
-    ".NETCoreApp,Version=v5.0": {
-      "libpxcclr.cs/10.0.26.400": {
-        "runtime": {
-          "lib/net40/libpxcclr.cs.dll": {
-            "assemblyVersion": "0.0.0.0",
-            "fileVersion": "0.0.0.0"
-          }
-        }
-      },
-      "sharpsenses.realsense/0.10.0": {
-        "dependencies": {
-          "libpxcclr.cs": "10.0.26.400"
-        },
-        "runtime": {
-          "lib/net45/SharpSenses.RealSense.dll": {
-            "assemblyVersion": "0.10.0.0",
-            "fileVersion": "0.10.0.0"
-          },
-          "lib/net45/SharpSenses.dll": {
-            "assemblyVersion": "1.0.0.0",
-            "fileVersion": "1.0.0.0"
-          }
-        }
-      }
-    }
+    ".NETCoreApp,Version=v5.0": {}
   },
-  "libraries": {
-    "libpxcclr.cs/10.0.26.400": {
-      "type": "package",
-      "serviceable": true,
-      "sha512": "sha512-Z/6dnn2eG74XHTcLdo8O6nW4RZBg5BkLyFc2te50I566hF+l484ZWf+0/ZNdQkbwL7pKlAA3ZJCI3P6HDKMdPw==",
-      "path": "libpxcclr.cs/10.0.26.400",
-      "hashPath": "libpxcclr.cs.10.0.26.400.nupkg.sha512"
-    },
-    "sharpsenses.realsense/0.10.0": {
-      "type": "package",
-      "serviceable": true,
-      "sha512": "sha512-afPk3PA/aKZJGsAnW/T58R32+2u/psToc38yyVP+NEUhU651WDj9rgajf2oUUx6ms2dZztz1GC3o1k/TXupwsA==",
-      "path": "sharpsenses.realsense/0.10.0",
-      "hashPath": "sharpsenses.realsense.0.10.0.nupkg.sha512"
-    }
-  }
+  "libraries": {}
 }

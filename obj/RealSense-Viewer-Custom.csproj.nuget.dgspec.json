@@ -43,9 +43,9 @@
         "net5.0-windows7.0": {
           "targetAlias": "net5.0-windows",
           "dependencies": {
-            "sharpsenses.realsense": {
+            "Intel.RealSenseWithNativeDll": {
               "target": "Package",
-              "version": "[0.10.0, )"
+              "version": "[2.36.0, )"
             }
           },
           "imports": [

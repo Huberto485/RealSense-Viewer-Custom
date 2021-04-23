@@ -8,41 +8,17 @@
     ".NETCoreApp,Version=v5.0": {
       "RealSense-Viewer-Custom/1.0.0": {
         "dependencies": {
-          "sharpsenses.realsense": "0.10.0",
-          "Intel.Realsense": "2.43.0.0"
+          "Intel.RealSenseWithNativeDll": "2.36.0"
         },
         "runtime": {
           "RealSense-Viewer-Custom.dll": {}
         }
       },
-      "libpxcclr.cs/10.0.26.400": {
+      "Intel.RealSenseWithNativeDll/2.36.0": {
         "runtime": {
-          "lib/net40/libpxcclr.cs.dll": {
-            "assemblyVersion": "0.0.0.0",
-            "fileVersion": "0.0.0.0"
-          }
-        }
-      },
-      "sharpsenses.realsense/0.10.0": {
-        "dependencies": {
-          "libpxcclr.cs": "10.0.26.400"
-        },
-        "runtime": {
-          "lib/net45/SharpSenses.RealSense.dll": {
-            "assemblyVersion": "0.10.0.0",
-            "fileVersion": "0.10.0.0"
-          },
-          "lib/net45/SharpSenses.dll": {
+          "lib/netcoreapp3.0/Intel.RealSense.dll": {
             "assemblyVersion": "1.0.0.0",
             "fileVersion": "1.0.0.0"
-          }
-        }
-      },
-      "Intel.Realsense/2.43.0.0": {
-        "runtime": {
-          "Intel.Realsense.dll": {
-            "assemblyVersion": "2.43.0.0",
-            "fileVersion": "2.43.0.3013"
           }
         }
       }
@@ -54,24 +30,12 @@
       "serviceable": false,
       "sha512": ""
     },
-    "libpxcclr.cs/10.0.26.400": {
+    "Intel.RealSenseWithNativeDll/2.36.0": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-Z/6dnn2eG74XHTcLdo8O6nW4RZBg5BkLyFc2te50I566hF+l484ZWf+0/ZNdQkbwL7pKlAA3ZJCI3P6HDKMdPw==",
-      "path": "libpxcclr.cs/10.0.26.400",
-      "hashPath": "libpxcclr.cs.10.0.26.400.nupkg.sha512"
-    },
-    "sharpsenses.realsense/0.10.0": {
-      "type": "package",
-      "serviceable": true,
-      "sha512": "sha512-afPk3PA/aKZJGsAnW/T58R32+2u/psToc38yyVP+NEUhU651WDj9rgajf2oUUx6ms2dZztz1GC3o1k/TXupwsA==",
-      "path": "sharpsenses.realsense/0.10.0",
-      "hashPath": "sharpsenses.realsense.0.10.0.nupkg.sha512"
-    },
-    "Intel.Realsense/2.43.0.0": {
-      "type": "reference",
-      "serviceable": false,
-      "sha512": ""
+      "sha512": "sha512-Sh89CIRyJQ4il0JsFrzodPR4H/6Uam9805OKQQiXOnL6hjnw64NCJlIdzo+N23ywELkqKGZBBPKU6+EMsovGqg==",
+      "path": "intel.realsensewithnativedll/2.36.0",
+      "hashPath": "intel.realsensewithnativedll.2.36.0.nupkg.sha512"
     }
   }
 }

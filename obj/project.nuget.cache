@@ -1,32 +1,10 @@
 {
   "version": 2,
-  "dgSpecHash": "c17uJs5kGISUams7Qh3rplQGnv11BUf6el7Ii4jBe63sANm/IaImZQuB73/7NYb25XvG6RFaWPmbTs64+10vFA==",
+  "dgSpecHash": "YfIYhjBs5Xm3bpMFktG4EvdtByxyz5rwanCFnEX2bUENBxK1Xh5JBeosmxbyM2aNkge9RXGQj2WUKzyWv2PZpw==",
   "success": true,
   "projectFilePath": "D:\\Program Files\\VS Community Workspace\\RealSense-Viewer-Custom\\RealSense-Viewer-Custom.csproj",
   "expectedPackageFiles": [
-    "C:\\Users\\Adam\\.nuget\\packages\\libpxcclr.cs\\10.0.26.400\\libpxcclr.cs.10.0.26.400.nupkg.sha512",
-    "C:\\Users\\Adam\\.nuget\\packages\\sharpsenses.realsense\\0.10.0\\sharpsenses.realsense.0.10.0.nupkg.sha512"
+    "C:\\Users\\Adam\\.nuget\\packages\\intel.realsensewithnativedll\\2.36.0\\intel.realsensewithnativedll.2.36.0.nupkg.sha512"
   ],
-  "logs": [
-    {
-      "code": "NU1701",
-      "level": "Warning",
-      "warningLevel": 1,
-      "message": "Package 'libpxcclr.cs 10.0.26.400' was restored using '.NETFramework,Version=v4.6.1, .NETFramework,Version=v4.6.2, .NETFramework,Version=v4.7, .NETFramework,Version=v4.7.1, .NETFramework,Version=v4.7.2, .NETFramework,Version=v4.8' instead of the project target framework 'net5.0-windows7.0'. This package may not be fully compatible with your project.",
-      "libraryId": "libpxcclr.cs",
-      "targetGraphs": [
-        "net5.0-windows7.0"
-      ]
-    },
-    {
-      "code": "NU1701",
-      "level": "Warning",
-      "warningLevel": 1,
-      "message": "Package 'sharpsenses.realsense 0.10.0' was restored using '.NETFramework,Version=v4.6.1, .NETFramework,Version=v4.6.2, .NETFramework,Version=v4.7, .NETFramework,Version=v4.7.1, .NETFramework,Version=v4.7.2, .NETFramework,Version=v4.8' instead of the project target framework 'net5.0-windows7.0'. This package may not be fully compatible with your project.",
-      "libraryId": "sharpsenses.realsense",
-      "targetGraphs": [
-        "net5.0-windows7.0"
-      ]
-    }
-  ]
+  "logs": []
 }
