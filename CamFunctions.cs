@@ -13,8 +13,15 @@ namespace RealSense_Viewer_Custom
 			return "file name";
 		}
 
+		/// <summary>
+		/// Code snippet from C# wrapper library of RealSense.
+		/// USE: Create a new instance of D435 camera and start it.
+		/// RETURN: Sends distance in meters from camera.
+		/// </summary>
+
 		public float tryCam()
         {
+
 			var pipe = new Pipeline();
 			pipe.Start();
 

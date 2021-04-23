@@ -28,14 +28,9 @@ namespace RealSense_Viewer_Custom
 
         private void buttonPicture_Click(object sender, EventArgs e)
         {
-            camOn = !camOn;
 
-            while (camOn == true)
-            {
-                var distance = camera.tryCam();
-                labelFileName.Text = "distance: " + distance + " meters";
-            }
-            
+            var distance = camera.tryCam();
+            labelConnect.Text = "Distance: " + Math.Round(distance, 3) + "m";
         }
 
         private void label2_Click(object sender, EventArgs e)
