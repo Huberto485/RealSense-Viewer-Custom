@@ -34,12 +34,6 @@ namespace RealSense_Viewer_Custom
 
 		public float getDepth()
         {
-
-			if ( cameraConnected() == false )
-            {
-				return 9999;
-            }
-
 			//Start streaming with default settings.
 			var pipe = new Pipeline();
 			pipe.Start();

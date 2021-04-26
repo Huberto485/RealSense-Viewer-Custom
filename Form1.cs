@@ -33,39 +33,29 @@ namespace RealSense_Viewer_Custom
         /// DO: Take a snapshot of the depth sensor metadata from the camera.
         private void buttonPicture_Click(object sender, EventArgs e)
         {
-
             string infoFull = "";
-
-            var picture = camera.takePicture();
-            var distance = camera.getDepth();
-
-            camInfo.Add(string.Format("Distance: {0:N3} meters\n", camera.getDepth()));
-            camInfo.Add(string.Format("Distance: {0:N3} meters\n", camera.getDepth()));
 
             //Check whether a camera is connected.
             if ( camera.cameraConnected() == true )
             {
-                labelConnect.Text = "Connected";
-                infoFull += camInfo[0];
-                infoFull += camInfo[1];
+                labelConnect.Text = "Connected!";
 
-                //Judge whether the object is too close to the camera lens.
-                if ( distance <= 0.2 )
+                //Check if distance value has already been created in this form instance.
+                if ( camInfo.Count == 1)
                 {
-                    labelCameraInfo.Text = "Vision obscured!";
-                }
-                else if ( distance == 9999 )
-                {
-                    labelCameraInfo.Text = "No camera available!\t hello!";
+                    camInfo[0] = (string.Format("Distance: {0:N3}m\n", camera.getDepth()));
                 }
                 else
                 {
-                    labelCameraInfo.Text = "Distance: " + Math.Round(distance, 3) + "m";
+                    camInfo.Add(string.Format("Distance: {0:N3}m\n", camera.getDepth()));
                 }
+
+                //Add distance value to the information.
+                infoFull += camInfo[0];
             }
             else
             {
-                labelConnect.Text = "Not connected";
+                labelConnect.Text = "Not connected!";
             }
 
             labelCameraInfo.Text = infoFull;
