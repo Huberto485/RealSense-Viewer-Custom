@@ -5,13 +5,26 @@ namespace RealSense_Viewer_Custom
 	public class CamFunctions
 	{
 
-		bool connectedBool = false;
-		bool recordBool = false;
-
 		public string fileName()
 		{
 			return "file name";
 		}
+
+		public bool cameraConnected()
+        {
+			Context ctx = new Context();
+			var devicesList = ctx.QueryDevices();
+
+			if (devicesList.Count > 0)
+            {
+				return true;
+            }
+			else
+            {
+				return false;
+            }
+
+        }
 
 		/// <summary>
 		/// Code snippet from C# wrapper library of RealSense.
@@ -21,6 +34,13 @@ namespace RealSense_Viewer_Custom
 
 		public float getDepth()
         {
+
+			if ( cameraConnected() == false )
+            {
+				return 9999;
+            }
+
+			//Start streaming with default settings.
 			var pipe = new Pipeline();
 			pipe.Start();
 
@@ -33,18 +53,22 @@ namespace RealSense_Viewer_Custom
 
 		public void recordVideo()
         {
-			while (recordBool == true)
-            {
-
-            }
-
 
         }
 
-		public void takePicture()
+		public int takePicture()
         {
+			var pipe = new Pipeline();
+			var cfg = new Config();
 
-        }
+			//Enable camera infrared sensors for depth.
+			cfg.EnableStream(Stream.Infrared, 1);
+			cfg.EnableStream(Stream.Infrared, 2);
+
+			pipe.Start(cfg);
+
+			return 1;
+		}
 
 	}
 }

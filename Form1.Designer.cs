@@ -30,19 +30,20 @@ namespace RealSense_Viewer_Custom
         private void InitializeComponent()
         {
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
-            this.label1 = new System.Windows.Forms.Label();
+            this.labelMenu1 = new System.Windows.Forms.Label();
             this.buttonPlay = new System.Windows.Forms.Button();
             this.buttonRecord = new System.Windows.Forms.Button();
             this.buttonPause = new System.Windows.Forms.Button();
             this.buttonPicture = new System.Windows.Forms.Button();
             this.buttonLoad = new System.Windows.Forms.Button();
             this.labelFileName = new System.Windows.Forms.Label();
-            this.label3 = new System.Windows.Forms.Label();
+            this.labelMenu2 = new System.Windows.Forms.Label();
             this.labelConnect = new System.Windows.Forms.Label();
             this.pictureBox2 = new System.Windows.Forms.PictureBox();
             this.pictureBox3 = new System.Windows.Forms.PictureBox();
             this.pictureBox4 = new System.Windows.Forms.PictureBox();
             this.pictureBox5 = new System.Windows.Forms.PictureBox();
+            this.labelCameraInfo = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox2)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox3)).BeginInit();
@@ -59,17 +60,17 @@ namespace RealSense_Viewer_Custom
             this.pictureBox1.TabIndex = 0;
             this.pictureBox1.TabStop = false;
             // 
-            // label1
+            // labelMenu1
             // 
-            this.label1.AutoSize = true;
-            this.label1.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(192)))), ((int)(((byte)(192)))), ((int)(((byte)(255)))));
-            this.label1.ForeColor = System.Drawing.SystemColors.ActiveCaptionText;
-            this.label1.Location = new System.Drawing.Point(13, 29);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(59, 15);
-            this.label1.TabIndex = 1;
-            this.label1.Text = "File Menu";
-            this.label1.Click += new System.EventHandler(this.label1_Click);
+            this.labelMenu1.AutoSize = true;
+            this.labelMenu1.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(192)))), ((int)(((byte)(192)))), ((int)(((byte)(255)))));
+            this.labelMenu1.ForeColor = System.Drawing.SystemColors.ActiveCaptionText;
+            this.labelMenu1.Location = new System.Drawing.Point(13, 29);
+            this.labelMenu1.Name = "labelMenu1";
+            this.labelMenu1.Size = new System.Drawing.Size(59, 15);
+            this.labelMenu1.TabIndex = 1;
+            this.labelMenu1.Text = "File Menu";
+            this.labelMenu1.Click += new System.EventHandler(this.labelMenu1_Click);
             // 
             // buttonPlay
             // 
@@ -121,7 +122,7 @@ namespace RealSense_Viewer_Custom
             this.buttonLoad.TabIndex = 6;
             this.buttonLoad.Text = "Load File";
             this.buttonLoad.UseVisualStyleBackColor = false;
-            this.buttonLoad.Click += new System.EventHandler(this.buttonLoad_Click);
+            this.buttonLoad.Click += new System.EventHandler(this.labelMenu2_Click);
             // 
             // labelFileName
             // 
@@ -133,29 +134,30 @@ namespace RealSense_Viewer_Custom
             this.labelFileName.Size = new System.Drawing.Size(68, 15);
             this.labelFileName.TabIndex = 7;
             this.labelFileName.Text = "Current File";
-            this.labelFileName.Click += new System.EventHandler(this.label2_Click);
+            this.labelFileName.Click += new System.EventHandler(this.labelFileName_Click);
             // 
-            // label3
+            // labelMenu2
             // 
-            this.label3.AutoSize = true;
-            this.label3.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(192)))), ((int)(((byte)(192)))), ((int)(((byte)(255)))));
-            this.label3.ForeColor = System.Drawing.SystemColors.ActiveCaptionText;
-            this.label3.Location = new System.Drawing.Point(13, 224);
-            this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(93, 15);
-            this.label3.TabIndex = 8;
-            this.label3.Text = "Camera Settings";
+            this.labelMenu2.AutoSize = true;
+            this.labelMenu2.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(192)))), ((int)(((byte)(192)))), ((int)(((byte)(255)))));
+            this.labelMenu2.ForeColor = System.Drawing.SystemColors.ActiveCaptionText;
+            this.labelMenu2.Location = new System.Drawing.Point(13, 224);
+            this.labelMenu2.Name = "labelMenu2";
+            this.labelMenu2.Size = new System.Drawing.Size(93, 15);
+            this.labelMenu2.TabIndex = 8;
+            this.labelMenu2.Text = "Camera Settings";
             // 
             // labelConnect
             // 
             this.labelConnect.AutoSize = true;
-            this.labelConnect.BackColor = System.Drawing.Color.GhostWhite;
+            this.labelConnect.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(128)))), ((int)(((byte)(106)))), ((int)(((byte)(200)))));
             this.labelConnect.ForeColor = System.Drawing.SystemColors.ActiveCaptionText;
-            this.labelConnect.Location = new System.Drawing.Point(331, 37);
+            this.labelConnect.Location = new System.Drawing.Point(213, 247);
             this.labelConnect.Name = "labelConnect";
             this.labelConnect.Size = new System.Drawing.Size(88, 15);
             this.labelConnect.TabIndex = 9;
             this.labelConnect.Text = "Not Connected";
+            this.labelConnect.Click += new System.EventHandler(this.labelConnect_Click);
             // 
             // pictureBox2
             // 
@@ -193,21 +195,32 @@ namespace RealSense_Viewer_Custom
             this.pictureBox5.TabIndex = 13;
             this.pictureBox5.TabStop = false;
             // 
+            // labelCameraInfo
+            // 
+            this.labelCameraInfo.AutoSize = true;
+            this.labelCameraInfo.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(128)))), ((int)(((byte)(106)))), ((int)(((byte)(200)))));
+            this.labelCameraInfo.ForeColor = System.Drawing.SystemColors.ActiveCaptionText;
+            this.labelCameraInfo.Location = new System.Drawing.Point(22, 247);
+            this.labelCameraInfo.Name = "labelCameraInfo";
+            this.labelCameraInfo.Size = new System.Drawing.Size(0, 15);
+            this.labelCameraInfo.TabIndex = 14;
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.GhostWhite;
             this.ClientSize = new System.Drawing.Size(1008, 592);
+            this.Controls.Add(this.labelCameraInfo);
             this.Controls.Add(this.labelConnect);
-            this.Controls.Add(this.label3);
+            this.Controls.Add(this.labelMenu2);
             this.Controls.Add(this.labelFileName);
             this.Controls.Add(this.buttonLoad);
             this.Controls.Add(this.buttonPicture);
             this.Controls.Add(this.buttonPause);
             this.Controls.Add(this.buttonRecord);
             this.Controls.Add(this.buttonPlay);
-            this.Controls.Add(this.label1);
+            this.Controls.Add(this.labelMenu1);
             this.Controls.Add(this.pictureBox1);
             this.Controls.Add(this.pictureBox2);
             this.Controls.Add(this.pictureBox3);
@@ -240,9 +253,9 @@ namespace RealSense_Viewer_Custom
         private System.Windows.Forms.Button button5;
 
         /// Labels
-        private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.Label labelMenu1;
         private System.Windows.Forms.Label labelFileName;
-        private System.Windows.Forms.Label label3;
+        private System.Windows.Forms.Label labelMenu2;
         private System.Windows.Forms.Label labelConnect;
 
 
@@ -253,6 +266,7 @@ namespace RealSense_Viewer_Custom
         private System.Windows.Forms.PictureBox pictureBox4;
         private System.Windows.Forms.PictureBox pictureBox5;
         private System.Windows.Forms.Button buttonLoad;
+        private System.Windows.Forms.Label labelCameraInfo;
     }
 }
 
