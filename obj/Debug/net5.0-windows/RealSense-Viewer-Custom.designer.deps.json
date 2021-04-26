@@ -5,7 +5,24 @@
   },
   "compilationOptions": {},
   "targets": {
-    ".NETCoreApp,Version=v5.0": {}
+    ".NETCoreApp,Version=v5.0": {
+      "Intel.RealSenseWithNativeDll/2.36.0": {
+        "runtime": {
+          "lib/netcoreapp3.0/Intel.RealSense.dll": {
+            "assemblyVersion": "1.0.0.0",
+            "fileVersion": "1.0.0.0"
+          }
+        }
+      }
+    }
   },
-  "libraries": {}
+  "libraries": {
+    "Intel.RealSenseWithNativeDll/2.36.0": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-Sh89CIRyJQ4il0JsFrzodPR4H/6Uam9805OKQQiXOnL6hjnw64NCJlIdzo+N23ywELkqKGZBBPKU6+EMsovGqg==",
+      "path": "intel.realsensewithnativedll/2.36.0",
+      "hashPath": "intel.realsensewithnativedll.2.36.0.nupkg.sha512"
+    }
+  }
 }

@@ -28,9 +28,16 @@ namespace RealSense_Viewer_Custom
 
         private void buttonPicture_Click(object sender, EventArgs e)
         {
+            var distance = camera.getDepth();
 
-            var distance = camera.tryCam();
-            labelConnect.Text = "Distance: " + Math.Round(distance, 3) + "m";
+            if ( distance <= 0.2 )
+            {
+                labelConnect.Text = "Vision obscured!";
+            }
+            else
+            {
+                labelConnect.Text = "Distance: " + Math.Round(distance, 3) + "m";
+            }
         }
 
         private void label2_Click(object sender, EventArgs e)

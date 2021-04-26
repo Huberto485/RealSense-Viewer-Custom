@@ -19,15 +19,14 @@ namespace RealSense_Viewer_Custom
 		/// RETURN: Sends distance in meters from camera.
 		/// </summary>
 
-		public float tryCam()
+		public float getDepth()
         {
-
 			var pipe = new Pipeline();
 			pipe.Start();
 
 			using (var frames = pipe.WaitForFrames())
 			using (var depth = frames.DepthFrame)
-			{
+			{		
 				return depth.GetDistance(depth.Width / 2, depth.Height / 2);
 			}
 		}
