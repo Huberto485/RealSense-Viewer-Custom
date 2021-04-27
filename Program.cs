@@ -1,8 +1,4 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading;
-using Intel.RealSense;
 using System.Windows.Forms;
 
 namespace RealSense_Viewer_Custom
@@ -18,7 +14,7 @@ namespace RealSense_Viewer_Custom
             Application.SetHighDpiMode(HighDpiMode.SystemAware);
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new Form1());  
+            Application.Run(new Form1());
         }
     }
 }
