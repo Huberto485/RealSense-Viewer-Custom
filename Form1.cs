@@ -1,9 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Threading;
 using System.ComponentModel;
-using System.Drawing;
 using System.Windows.Forms;
+using System.Drawing;
 using Intel.RealSense;
 
 namespace RealSense_Viewer_Custom
@@ -16,19 +14,22 @@ namespace RealSense_Viewer_Custom
 
         CamFunctions camera = new CamFunctions();
 
-        //Workers that work on different threads
+        //Workers that work on different threads.
         private BackgroundWorker depthWorker = new BackgroundWorker();
         private BackgroundWorker recordWorker = new BackgroundWorker();
 
-        //Information about camera settings
+        //Information about camera settings.
         private float distance = 0;
+
+        //Bitmaps for holding depth and color frames.
+        private Bitmap depthImage;
+        private Bitmap colorImage;
 
         public delegate void InvokeDelegate();
 
         public Form1()
         {
             InitializeComponent();
-
             InitializeDepthWorker();
             InitializeRecordWorker();
         }
@@ -81,9 +82,17 @@ namespace RealSense_Viewer_Custom
                     //Update camera connection label.
                     labelConnect.BeginInvoke(new InvokeDelegate(labelConnectInvoke));
 
+                    //Settings for streaming metadata.
+                    using var cfg = new Config();
+                    cfg.EnableStream(Stream.Color);
+                    cfg.EnableStream(Stream.Depth);
+
+                    //Declare a new colorizer class for camera instance.
+                    using var colorizer = new Colorizer();
+
                     //Start streaming with default settings.
                     using var pipe = new Pipeline();
-                    pipe.Start();
+                    pipe.Start(cfg);
 
                     while (depthStreaming == true)
                     {
@@ -98,7 +107,16 @@ namespace RealSense_Viewer_Custom
                             //Get camera depth from current frame.
                             using (var frames = pipe.WaitForFrames())
                             using (var depth = frames.DepthFrame)
+                            using (var color = frames.ColorFrame)
                             {
+                                var colorizeDepth = colorizer.Process(depth).DisposeWith(frames);
+
+                                //Put metadata from depth stream and color stream into their respective Bitmaps.
+                                depthImage = new Bitmap(depth.Width, depth.Height, 
+                                    depth.Stride, System.Drawing.Imaging.PixelFormat.Format24bppRgb, depth.Data);
+                                colorImage = new Bitmap(color.Width, color.Height, 
+                                    color.Stride, System.Drawing.Imaging.PixelFormat.Format24bppRgb, color.Data);
+
                                 distance = depth.GetDistance(depth.Width / 2, depth.Height / 2);
                                 //Update camera info panel.
                                 worker.ReportProgress(1);
@@ -120,6 +138,7 @@ namespace RealSense_Viewer_Custom
             {
                 //If flag is 1, output depth.
                 labelCameraInfo.Text = string.Format("Distance: {0:N3} meters", distance);
+                pictureBox1.Image = depthImage;
             }
             else
             {
@@ -136,6 +155,8 @@ namespace RealSense_Viewer_Custom
                 depthStreaming = !depthStreaming;
             }
 
+            pictureBox1.Image = null;
+            labelCameraInfo.Text = "Distance: ---";
             labelConnect.Text = "Connected!";
         }
 
@@ -161,7 +182,7 @@ namespace RealSense_Viewer_Custom
         /// RECORDING FUNCTIONALITY
         /// </summary>
 
-        private void buttonRecord_Click()
+        private void buttonRecord_Click(object sender, EventArgs e)
         {
             if(recordWorker.IsBusy != true)
             {

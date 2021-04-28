@@ -92,7 +92,7 @@ namespace RealSense_Viewer_Custom
             this.buttonRecord.TabIndex = 3;
             this.buttonRecord.Text = "Record";
             this.buttonRecord.UseVisualStyleBackColor = false;
-            this.buttonRecord.Click += new System.EventHandler(this.buttonRecord_Click);
+            this.buttonPlay.Click += new System.EventHandler(this.buttonRecord_Click);
             // 
             // buttonPause
             // 
