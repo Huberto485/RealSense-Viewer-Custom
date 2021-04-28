@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "RealSense-Viewer-Custom": {
+      "commandName": "Project",
+      "nativeDebugging": true
+    }
+  }
+}

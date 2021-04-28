@@ -22,8 +22,8 @@ namespace RealSense_Viewer_Custom
         private float distance = 0;
 
         //Bitmaps for holding depth and color frames.
-        private Bitmap depthImage;
-        private Bitmap colorImage;
+        public Bitmap depthImage;
+        public Bitmap colorImage;
 
         public delegate void InvokeDelegate();
 
@@ -84,8 +84,8 @@ namespace RealSense_Viewer_Custom
 
                     //Settings for streaming metadata.
                     using var cfg = new Config();
-                    cfg.EnableStream(Stream.Color);
-                    cfg.EnableStream(Stream.Depth);
+                    cfg.EnableStream(Stream.Color, 640, 480);
+                    cfg.EnableStream(Stream.Depth, 640, 480);
 
                     //Declare a new colorizer class for camera instance.
                     using var colorizer = new Colorizer();
@@ -112,9 +112,9 @@ namespace RealSense_Viewer_Custom
                                 var colorizeDepth = colorizer.Process(depth).DisposeWith(frames);
 
                                 //Put metadata from depth stream and color stream into their respective Bitmaps.
-                                depthImage = new Bitmap(depth.Width, depth.Height, 
+                                depthImage = new Bitmap(depth.Width, depth.Height,
                                     depth.Stride, System.Drawing.Imaging.PixelFormat.Format24bppRgb, depth.Data);
-                                colorImage = new Bitmap(color.Width, color.Height, 
+                                colorImage = new Bitmap(color.Width, color.Height,
                                     color.Stride, System.Drawing.Imaging.PixelFormat.Format24bppRgb, color.Data);
 
                                 distance = depth.GetDistance(depth.Width / 2, depth.Height / 2);
@@ -123,6 +123,8 @@ namespace RealSense_Viewer_Custom
                             }
                         }
                     }
+
+                    pipe.Stop();
                 }
                 else
                 {

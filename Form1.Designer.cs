@@ -55,9 +55,9 @@ namespace RealSense_Viewer_Custom
             // pictureBox1
             // 
             this.pictureBox1.BackColor = System.Drawing.Color.GhostWhite;
-            this.pictureBox1.Location = new System.Drawing.Point(318, 27);
+            this.pictureBox1.Location = new System.Drawing.Point(344, 27);
             this.pictureBox1.Name = "pictureBox1";
-            this.pictureBox1.Size = new System.Drawing.Size(678, 536);
+            this.pictureBox1.Size = new System.Drawing.Size(640, 480);
             this.pictureBox1.TabIndex = 0;
             this.pictureBox1.TabStop = false;
             // 
@@ -75,29 +75,28 @@ namespace RealSense_Viewer_Custom
             // buttonPlay
             // 
             this.buttonPlay.BackColor = System.Drawing.SystemColors.Control;
-            this.buttonPlay.Location = new System.Drawing.Point(627, 529);
+            this.buttonPlay.Location = new System.Drawing.Point(627, 513);
             this.buttonPlay.Name = "buttonPlay";
             this.buttonPlay.Size = new System.Drawing.Size(75, 23);
             this.buttonPlay.TabIndex = 2;
             this.buttonPlay.Text = "Play";
             this.buttonPlay.UseVisualStyleBackColor = false;
-            this.buttonPlay.Click += new System.EventHandler(this.buttonPlay_Click);
+            this.buttonPlay.Click += new System.EventHandler(this.buttonRecord_Click);
             // 
             // buttonRecord
             // 
             this.buttonRecord.BackColor = System.Drawing.SystemColors.Control;
-            this.buttonRecord.Location = new System.Drawing.Point(546, 529);
+            this.buttonRecord.Location = new System.Drawing.Point(546, 513);
             this.buttonRecord.Name = "buttonRecord";
             this.buttonRecord.Size = new System.Drawing.Size(75, 23);
             this.buttonRecord.TabIndex = 3;
             this.buttonRecord.Text = "Record";
             this.buttonRecord.UseVisualStyleBackColor = false;
-            this.buttonPlay.Click += new System.EventHandler(this.buttonRecord_Click);
             // 
             // buttonPause
             // 
             this.buttonPause.BackColor = System.Drawing.SystemColors.Control;
-            this.buttonPause.Location = new System.Drawing.Point(708, 529);
+            this.buttonPause.Location = new System.Drawing.Point(708, 513);
             this.buttonPause.Name = "buttonPause";
             this.buttonPause.Size = new System.Drawing.Size(75, 23);
             this.buttonPause.TabIndex = 4;
@@ -107,7 +106,7 @@ namespace RealSense_Viewer_Custom
             // buttonPicture
             // 
             this.buttonPicture.BackColor = System.Drawing.SystemColors.Control;
-            this.buttonPicture.Location = new System.Drawing.Point(331, 529);
+            this.buttonPicture.Location = new System.Drawing.Point(344, 513);
             this.buttonPicture.Name = "buttonPicture";
             this.buttonPicture.Size = new System.Drawing.Size(91, 23);
             this.buttonPicture.TabIndex = 5;
@@ -200,7 +199,7 @@ namespace RealSense_Viewer_Custom
             this.labelCameraInfo.ForeColor = System.Drawing.SystemColors.ActiveCaptionText;
             this.labelCameraInfo.Location = new System.Drawing.Point(22, 281);
             this.labelCameraInfo.Name = "labelCameraInfo";
-            this.labelCameraInfo.Size = new System.Drawing.Size(167, 15);
+            this.labelCameraInfo.Size = new System.Drawing.Size(180, 15);
             this.labelCameraInfo.TabIndex = 14;
             this.labelCameraInfo.Text = "Start streaming to get info here...";
             // 
