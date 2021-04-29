@@ -84,11 +84,16 @@ namespace RealSense_Viewer_Custom
 
                     //Settings for streaming metadata.
                     using var cfg = new Config();
-                    cfg.EnableStream(Stream.Color, 640, 480);
                     cfg.EnableStream(Stream.Depth, 640, 480);
 
                     //Declare a new colorizer class for camera instance.
                     using var colorizer = new Colorizer();
+
+                    //Convert depth to disparity.
+                    using var disparityTransform = new DisparityTransform();
+
+                    //Add a depth treshold filter.
+                    using var thresholdFilter = new ThresholdFilter();
 
                     //Start streaming with default settings.
                     using var pipe = new Pipeline();
@@ -105,19 +110,22 @@ namespace RealSense_Viewer_Custom
                         else
                         {
                             //Get camera depth from current frame.
-                            using (var frames = pipe.WaitForFrames())
-                            using (var depth = frames.DepthFrame)
-                            using (var color = frames.ColorFrame)
+                            using (var frameSet = pipe.WaitForFrames())
+                            using (var frame = frameSet.DepthFrame)
+                            //using (var color = frames.ColorFrame)
                             {
-                                var colorizeDepth = colorizer.Process(depth).DisposeWith(frames);
+                                //Apply filters to the frame.
+                                var filteredFrame = thresholdFilter.Process(frame).DisposeWith(frameSet);
+                                filteredFrame = disparityTransform.Process(filteredFrame).DisposeWith(frameSet);
+                                filteredFrame = colorizer.Process(filteredFrame).DisposeWith(frameSet);
 
                                 //Put metadata from depth stream and color stream into their respective Bitmaps.
-                                depthImage = new Bitmap(depth.Width, depth.Height,
-                                    depth.Stride, System.Drawing.Imaging.PixelFormat.Format24bppRgb, depth.Data);
-                                colorImage = new Bitmap(color.Width, color.Height,
-                                    color.Stride, System.Drawing.Imaging.PixelFormat.Format24bppRgb, color.Data);
+                                depthImage = new Bitmap(frame.Width, frame.Height,
+                                    1920, System.Drawing.Imaging.PixelFormat.Format24bppRgb, filteredFrame.Data);
+                                //colorImage = new Bitmap(color.Width, color.Height,
+                                //    color.Stride, System.Drawing.Imaging.PixelFormat.Format24bppRgb, color.Data);
 
-                                distance = depth.GetDistance(depth.Width / 2, depth.Height / 2);
+                                distance = frame.GetDistance(frame.Width / 2, frame.Height / 2);
                                 //Update camera info panel.
                                 worker.ReportProgress(1);
                             }
