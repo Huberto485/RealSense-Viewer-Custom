@@ -105,38 +105,45 @@ namespace RealSense_Viewer_Custom
                     using var pipe = new Pipeline();
                     pipe.Start(cfg);
 
-                    while (depthStreaming == true)
+                    try
                     {
-                        //Check for process cancellation.
-                        if (depthWorker.CancellationPending == true)
+                        while (depthStreaming == true)
                         {
-                            e.Cancel = true;
-                            break;
-                        }
-                        else
-                        {
-                            //Get camera depth from current frame.
-                            using (var frameSet = pipe.WaitForFrames())
-                            using (var frame = frameSet.DepthFrame)
-                            //using (var color = frames.ColorFrame)
+                            //Check for process cancellation.
+                            if (depthWorker.CancellationPending == true)
                             {
-                                //Apply filters to the frame.
-                                var filteredFrame = thresholdFilter.Process(frame).DisposeWith(frameSet);
-                                filteredFrame = disparityTransform.Process(filteredFrame).DisposeWith(frameSet);
-                                filteredFrame = temporalFilter.Process(filteredFrame).DisposeWith(frameSet);
-                                filteredFrame = colorizer.Process(filteredFrame).DisposeWith(frameSet);
+                                e.Cancel = true;
+                                break;
+                            }
+                            else
+                            {
+                                //Get camera depth from current frame.
+                                using (var frameSet = pipe.WaitForFrames())
+                                using (var frame = frameSet.DepthFrame)
+                                //using (var color = frames.ColorFrame)
+                                {
+                                    //Apply filters to the frame.
+                                    var filteredFrame = thresholdFilter.Process(frame).DisposeWith(frameSet);
+                                    filteredFrame = disparityTransform.Process(filteredFrame).DisposeWith(frameSet);
+                                    filteredFrame = temporalFilter.Process(filteredFrame).DisposeWith(frameSet);
+                                    filteredFrame = colorizer.Process(filteredFrame).DisposeWith(frameSet);
 
-                                //Put metadata from depth stream and color stream into their respective Bitmaps.
-                                depthImage = new Bitmap(frame.Width, frame.Height,
-                                    1920, System.Drawing.Imaging.PixelFormat.Format24bppRgb, filteredFrame.Data);
-                                //colorImage = new Bitmap(color.Width, color.Height,
-                                //    color.Stride, System.Drawing.Imaging.PixelFormat.Format24bppRgb, color.Data);
+                                    //Put metadata from depth stream and color stream into their respective Bitmaps.
+                                    depthImage = new Bitmap(frame.Width, frame.Height,
+                                        1920, System.Drawing.Imaging.PixelFormat.Format24bppRgb, filteredFrame.Data);
+                                    //colorImage = new Bitmap(color.Width, color.Height,
+                                    //    color.Stride, System.Drawing.Imaging.PixelFormat.Format24bppRgb, color.Data);
 
-                                distance = frame.GetDistance(frame.Width / 2, frame.Height / 2);
-                                //Update camera info panel.
-                                worker.ReportProgress(1);
+                                    distance = frame.GetDistance(frame.Width / 2, frame.Height / 2);
+                                    //Update camera info panel.
+                                    worker.ReportProgress(1);
+                                }
                             }
                         }
+                    }
+                    catch (Exception error)
+                    {
+                        MessageBox.Show("Error during runtime: " + error, "Error");
                     }
 
                     pipe.Stop();
