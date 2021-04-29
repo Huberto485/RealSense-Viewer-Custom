@@ -12,8 +12,6 @@ namespace RealSense_Viewer_Custom
         private bool recordingOn = false;
         private bool depthStreaming = false;
 
-        CamFunctions camera = new CamFunctions();
-
         //Workers that work on different threads.
         private BackgroundWorker depthWorker = new BackgroundWorker();
         private BackgroundWorker recordWorker = new BackgroundWorker();
@@ -25,7 +23,10 @@ namespace RealSense_Viewer_Custom
         public Bitmap depthImage;
         public Bitmap colorImage;
 
-        public delegate void InvokeDelegate();
+        //New camera information variable class.
+        private Context ctx = new Context();
+
+        private delegate void InvokeDelegate();
 
         public Form1()
         {
@@ -44,17 +45,17 @@ namespace RealSense_Viewer_Custom
         /// </summary>
 
         //Button for this thread.
-        private void buttonStart_Click(object sender, EventArgs e)
+        private void buttonStream_Click(object sender, EventArgs e)
         {
             if (depthWorker.IsBusy != true)
             {
                 depthWorker.RunWorkerAsync();
-                buttonStart.Text = "Stop Cam";
+                buttonStream.Text = "Stop Cam";
             }
             else
             {
                 depthWorker.CancelAsync();
-                buttonStart.Text = "Start Cam";
+                buttonStream.Text = "Start Cam";
             }
         }
 
@@ -74,83 +75,98 @@ namespace RealSense_Viewer_Custom
         {
             using BackgroundWorker worker = sender as BackgroundWorker;
             {
+                using var list = ctx.QueryDevices(); 
+
                 //Check if camera is already connected and streaming.
-                if (depthStreaming != true)
+                if (list.Count != 0)
                 {
-                    depthStreaming = !depthStreaming;
-                    //Update camera connection label.
-                    labelConnect.BeginInvoke(new InvokeDelegate(labelConnectInvoke));
-
-                    //Settings for streaming metadata.
-                    using var cfg = new Config();
-                    cfg.EnableStream(Stream.Depth, 640, 480);
-
-                    /// <summary>
-                    /// FRAME FILTERS
-                    /// <summary>
-
-                    //Convert depth to disparity.
-                    using var disparityTransform = new DisparityTransform();
-
-                    //Add a depth threshold filter.
-                    using var thresholdFilter = new ThresholdFilter();
-
-                    //Add a temporal filter to fill out holes.
-                    using var temporalFilter = new TemporalFilter();
-
-                    //Declare a new colorizer class for camera instance.
-                    using var colorizer = new Colorizer();
-
-                    //Start streaming with default settings.
-                    using var pipe = new Pipeline();
-                    pipe.Start(cfg);
-
-                    try
+                    if (depthStreaming != true)
                     {
-                        while (depthStreaming == true)
+                        depthStreaming = !depthStreaming;
+                        //Update camera connection label.
+                        labelConnect.BeginInvoke(new InvokeDelegate(labelConnectInvokeOn));
+
+                        //Settings for streaming metadata.
+                        using var cfg = new Config();
+                        cfg.EnableStream(Stream.Depth, 640, 480);
+
+                        /// <summary>
+                        /// FRAME FILTERS
+                        /// <summary>
+
+                        //Convert depth to disparity.
+                        using var disparityTransform = new DisparityTransform();
+
+                        //Add a depth threshold filter.
+                        using var thresholdFilter = new ThresholdFilter();
+
+                        //Add a temporal filter to fill out holes.
+                        using var temporalFilter = new TemporalFilter();
+
+                        //Declare a new colorizer class for camera instance.
+                        using var colorizer = new Colorizer();
+
+                        //Create a new streaming-ready camera instance and start it.
+                        using var pipe = new Pipeline();
+                        pipe.Start(cfg);
+
+                        try
                         {
-                            //Check for process cancellation.
-                            if (depthWorker.CancellationPending == true)
+                            while (depthStreaming == true)
                             {
-                                e.Cancel = true;
-                                break;
-                            }
-                            else
-                            {
-                                //Get camera depth from current frame.
-                                using (var frameSet = pipe.WaitForFrames())
-                                using (var frame = frameSet.DepthFrame)
-                                //using (var color = frames.ColorFrame)
+                                //Check for process cancellation.
+                                if (depthWorker.CancellationPending == true)
                                 {
-                                    //Apply filters to the frame.
-                                    var filteredFrame = thresholdFilter.Process(frame).DisposeWith(frameSet);
-                                    filteredFrame = disparityTransform.Process(filteredFrame).DisposeWith(frameSet);
-                                    filteredFrame = temporalFilter.Process(filteredFrame).DisposeWith(frameSet);
-                                    filteredFrame = colorizer.Process(filteredFrame).DisposeWith(frameSet);
+                                    e.Cancel = true;
+                                    break;
+                                }
+                                else
+                                {
+                                    //Get camera depth from current frame.
+                                    using (var frameSet = pipe.WaitForFrames())
+                                    using (var frame = frameSet.DepthFrame)
+                                    //using (var color = frames.ColorFrame)
+                                    {
+                                        //Apply filters to the frame.
+                                        var filteredFrame = thresholdFilter.Process(frame).DisposeWith(frameSet);
+                                        filteredFrame = disparityTransform.Process(filteredFrame).DisposeWith(frameSet);
+                                        filteredFrame = temporalFilter.Process(filteredFrame).DisposeWith(frameSet);
+                                        filteredFrame = colorizer.Process(filteredFrame).DisposeWith(frameSet);
 
-                                    //Put metadata from depth stream and color stream into their respective Bitmaps.
-                                    depthImage = new Bitmap(frame.Width, frame.Height,
-                                        1920, System.Drawing.Imaging.PixelFormat.Format24bppRgb, filteredFrame.Data);
-                                    //colorImage = new Bitmap(color.Width, color.Height,
-                                    //    color.Stride, System.Drawing.Imaging.PixelFormat.Format24bppRgb, color.Data);
+                                        //Put metadata from depth stream and color stream into their respective Bitmaps.
+                                        depthImage = new Bitmap(frame.Width, frame.Height,
+                                            1920, System.Drawing.Imaging.PixelFormat.Format24bppRgb, filteredFrame.Data);
+                                        //colorImage = new Bitmap(color.Width, color.Height,
+                                        //    color.Stride, System.Drawing.Imaging.PixelFormat.Format24bppRgb, color.Data);
 
-                                    distance = frame.GetDistance(frame.Width / 2, frame.Height / 2);
-                                    //Update camera info panel.
-                                    worker.ReportProgress(1);
+                                        distance = frame.GetDistance(frame.Width / 2, frame.Height / 2);
+                                        //Update camera info panel.
+                                        worker.ReportProgress(1);
+                                    }
                                 }
                             }
                         }
-                    }
-                    catch (Exception error)
-                    {
-                        MessageBox.Show("Error during runtime: " + error, "Error");
-                    }
+                        catch (Exception error)
+                        {
+                            //Cancel thread action, reset button, and show an error.
+                            depthWorker.CancelAsync();
+                            buttonStream.BeginInvoke(new InvokeDelegate(buttonStreamInvokeOff));
+                            MessageBox.Show("Error during runtime: " + error, "Error");
+                        }
 
-                    pipe.Stop();
+                        pipe.Stop();
+                    }
+                    else
+                    {
+                        worker.ReportProgress(0);
+                    }
                 }
                 else
                 {
-                    worker.ReportProgress(0);
+                    //Cancel thread action, reset button, and reset label.
+                    depthWorker.CancelAsync();
+                    buttonStream.BeginInvoke(new InvokeDelegate(buttonStreamInvokeOff));
+                    labelConnect.BeginInvoke(new InvokeDelegate(labelConnectInvokeOff));
                 }
             }
         }
@@ -166,7 +182,7 @@ namespace RealSense_Viewer_Custom
             }
             else
             {
-                //Else change output to none;
+                //Change output to none.
                 labelCameraInfo.Text = "Distance: ---";
             }
         }
@@ -181,16 +197,25 @@ namespace RealSense_Viewer_Custom
 
             pictureBox1.Image = null;
             labelCameraInfo.Text = "Distance: ---";
-            labelConnect.Text = "Connected!";
         }
 
         /// <summary>
         /// INVOKE ELEMENTS FOR DEPTH STREAMING
         /// </summary>
 
-        private void labelConnectInvoke()
+        private void labelConnectInvokeOn()
         {
-            labelConnect.Text = "Streaming!";
+            labelConnect.Text = "Connected!";
+        }
+
+        private void labelConnectInvokeOff()
+        {
+            labelConnect.Text = "Not Connected!";
+        }
+
+        private void buttonStreamInvokeOff()
+        {
+            buttonStream.Text = "Start Cam";
         }
 
         /// <summary>

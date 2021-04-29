@@ -44,7 +44,7 @@ namespace RealSense_Viewer_Custom
             this.pictureBox4 = new System.Windows.Forms.PictureBox();
             this.pictureBox5 = new System.Windows.Forms.PictureBox();
             this.labelCameraInfo = new System.Windows.Forms.Label();
-            this.buttonStart = new System.Windows.Forms.Button();
+            this.buttonStream = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox2)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox3)).BeginInit();
@@ -152,9 +152,9 @@ namespace RealSense_Viewer_Custom
             this.labelConnect.ForeColor = System.Drawing.SystemColors.ActiveCaptionText;
             this.labelConnect.Location = new System.Drawing.Point(103, 251);
             this.labelConnect.Name = "labelConnect";
-            this.labelConnect.Size = new System.Drawing.Size(88, 15);
+            this.labelConnect.Size = new System.Drawing.Size(91, 15);
             this.labelConnect.TabIndex = 9;
-            this.labelConnect.Text = "Not Connected";
+            this.labelConnect.Text = "Not Connected!";
             // 
             // pictureBox2
             // 
@@ -203,16 +203,16 @@ namespace RealSense_Viewer_Custom
             this.labelCameraInfo.TabIndex = 14;
             this.labelCameraInfo.Text = "Start streaming to get info here...";
             // 
-            // buttonStart
+            // buttonStream
             // 
-            this.buttonStart.BackColor = System.Drawing.SystemColors.Control;
-            this.buttonStart.Location = new System.Drawing.Point(22, 247);
-            this.buttonStart.Name = "buttonStart";
-            this.buttonStart.Size = new System.Drawing.Size(75, 23);
-            this.buttonStart.TabIndex = 15;
-            this.buttonStart.Text = "Start Cam";
-            this.buttonStart.UseVisualStyleBackColor = false;
-            this.buttonStart.Click += new System.EventHandler(this.buttonStart_Click);
+            this.buttonStream.BackColor = System.Drawing.SystemColors.Control;
+            this.buttonStream.Location = new System.Drawing.Point(22, 247);
+            this.buttonStream.Name = "buttonStream";
+            this.buttonStream.Size = new System.Drawing.Size(75, 23);
+            this.buttonStream.TabIndex = 15;
+            this.buttonStream.Text = "Start Cam";
+            this.buttonStream.UseVisualStyleBackColor = false;
+            this.buttonStream.Click += new System.EventHandler(this.buttonStream_Click);
             // 
             // Form1
             // 
@@ -220,7 +220,7 @@ namespace RealSense_Viewer_Custom
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.GhostWhite;
             this.ClientSize = new System.Drawing.Size(1008, 592);
-            this.Controls.Add(this.buttonStart);
+            this.Controls.Add(this.buttonStream);
             this.Controls.Add(this.labelCameraInfo);
             this.Controls.Add(this.labelConnect);
             this.Controls.Add(this.labelMenu2);
@@ -262,7 +262,7 @@ namespace RealSense_Viewer_Custom
         private System.Windows.Forms.Button buttonPicture;
         private System.Windows.Forms.Button button5;
         private System.Windows.Forms.Button buttonLoad;
-        private System.Windows.Forms.Button buttonStart;
+        private System.Windows.Forms.Button buttonStream;
 
         /// Labels
         private System.Windows.Forms.Label labelMenu1;
