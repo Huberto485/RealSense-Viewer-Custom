@@ -70,7 +70,6 @@ namespace RealSense_Viewer_Custom
             depthWorker.WorkerReportsProgress = true;
         }
 
-
         private void depthWorker_DoWork(object sender, DoWorkEventArgs e)
         {
             using BackgroundWorker worker = sender as BackgroundWorker;
@@ -86,14 +85,21 @@ namespace RealSense_Viewer_Custom
                     using var cfg = new Config();
                     cfg.EnableStream(Stream.Depth, 640, 480);
 
-                    //Declare a new colorizer class for camera instance.
-                    using var colorizer = new Colorizer();
+                    /// <summary>
+                    /// FRAME FILTERS
+                    /// <summary>
 
                     //Convert depth to disparity.
                     using var disparityTransform = new DisparityTransform();
 
-                    //Add a depth treshold filter.
+                    //Add a depth threshold filter.
                     using var thresholdFilter = new ThresholdFilter();
+
+                    //Add a temporal filter to fill out holes.
+                    using var temporalFilter = new TemporalFilter();
+
+                    //Declare a new colorizer class for camera instance.
+                    using var colorizer = new Colorizer();
 
                     //Start streaming with default settings.
                     using var pipe = new Pipeline();
@@ -117,6 +123,7 @@ namespace RealSense_Viewer_Custom
                                 //Apply filters to the frame.
                                 var filteredFrame = thresholdFilter.Process(frame).DisposeWith(frameSet);
                                 filteredFrame = disparityTransform.Process(filteredFrame).DisposeWith(frameSet);
+                                filteredFrame = temporalFilter.Process(filteredFrame).DisposeWith(frameSet);
                                 filteredFrame = colorizer.Process(filteredFrame).DisposeWith(frameSet);
 
                                 //Put metadata from depth stream and color stream into their respective Bitmaps.
