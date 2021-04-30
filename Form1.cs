@@ -181,13 +181,13 @@ namespace RealSense_Viewer_Custom
             if (e.ProgressPercentage == 1)
             {
                 //If flag is 1, output depth.
-                labelDistance.Text = string.Format("Middle-Point Distance: {0:N3} meters", distance);
+                labelDistance.Text = string.Format("Centre-Point Distance: {0:N3} meters", distance);
                 pictureBox1.Image = depthImage;
             }
             else
             {
                 //Change output to none.
-                labelDistance.Text = "Middle-Point Distance: ---";
+                labelDistance.Text = "Centre-Point Distance: ---";
             }
         }
 
@@ -200,7 +200,7 @@ namespace RealSense_Viewer_Custom
             }
 
             pictureBox1.Image = null;
-            labelDistance.Text = "Middle-Point Distance: ---";
+            labelDistance.Text = "Centre-Point Distance: ---";
         }
 
         /// <summary>

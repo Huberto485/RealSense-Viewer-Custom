@@ -203,9 +203,9 @@ namespace RealSense_Viewer_Custom
             this.labelDistance.ForeColor = System.Drawing.SystemColors.ActiveCaptionText;
             this.labelDistance.Location = new System.Drawing.Point(22, 196);
             this.labelDistance.Name = "labelDistance";
-            this.labelDistance.Size = new System.Drawing.Size(146, 15);
+            this.labelDistance.Size = new System.Drawing.Size(144, 15);
             this.labelDistance.TabIndex = 14;
-            this.labelDistance.Text = "Middle-Point Distance: ---";
+            this.labelDistance.Text = "Centre-Point Distance: ---";
             // 
             // buttonStream
             // 
