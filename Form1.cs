@@ -264,16 +264,21 @@ namespace RealSense_Viewer_Custom
                         //Set the latency to 25 milliseconds.
                         Thread.Sleep(25);
 
-                        //Update mouse variables.
-
+                        //Get frameSet from the pipeline and then get an individual frame.
                         using (var frameSet = pipeline.WaitForFrames())
                         using (var frame = frameSet.DepthFrame)
                         {
                             using DepthFrame depthFrame = frameSet.DepthFrame;
+
+                            //Create a depth values array which is the size of 640 * 480 pixels.
+                            //This is a 1D long array of ushort type.
                             var depthArray = new ushort[frame.Width * frame.Height];
                             depthFrame.CopyTo(depthArray);
+
+                            //Get the pixel depth from the array.
+                            //Get mouseY value, multiply it by 640 and add mouseX value to get depth index.
                             distancePixel = depthArray[(mouseY - 1) * 640 + (mouseX - 1)];
-                            distancePixel = distancePixel / 1000;
+                            distancePixel /= 1000;
                         }
 
                         worker.ReportProgress(1);
@@ -281,7 +286,6 @@ namespace RealSense_Viewer_Custom
                 }
                 catch (Exception error)
                 {
-                    MessageBox.Show("Camera not connected!", "Error");
                     worker.CancelAsync();
                 }
                 
@@ -291,7 +295,7 @@ namespace RealSense_Viewer_Custom
         private void depthCheckWorker_ProgressChanged(object sender, ProgressChangedEventArgs e)
         {
             //Check progress flags.
-            if (e.ProgressPercentage >= 1)
+            if (e.ProgressPercentage == 1)
             {
                 if (mouseX >= 2 && mouseX <= 639 && mouseY >= 2 && mouseY <= 479)
                 {
@@ -315,12 +319,6 @@ namespace RealSense_Viewer_Custom
 
         private void depthCheckWorker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
-            //Set depth streaming back to false when method is not used anymore.
-            if (depthStreaming != false)
-            {
-                depthStreaming = !depthStreaming;
-            }
-
             labelDistancePixel.Text = "Distance: ---";
             labelPixel.Text = "Pixel: ---,---";
         }
