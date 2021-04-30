@@ -2,26 +2,46 @@
 using System.ComponentModel;
 using System.Windows.Forms;
 using System.Drawing;
+using System.Threading;
 using Intel.RealSense;
 
 namespace RealSense_Viewer_Custom
 {
     public partial class Form1 : Form
     {
-        private bool cameraOn = false;
-        private bool recordingOn = false;
+        //Boolean values for logic inside functions.
+        private bool depthVideo = false;
+        private bool depthRecording = false;
         private bool depthStreaming = false;
 
         //Workers that work on different threads.
         private BackgroundWorker depthWorker = new BackgroundWorker();
         private BackgroundWorker recordWorker = new BackgroundWorker();
+        private BackgroundWorker depthCheckWorker = new BackgroundWorker();
+
+        //Global mouse coordinates for mouse over depth stream.
+        private int mouseX = 0;
+        private int mouseY = 0;
+
+        private Pipeline pipeline = new Pipeline();
+
+        //Frame filters which get applied.
+        //Add a depth threshold filter.
+        private ThresholdFilter thresholdFilter = new ThresholdFilter();
+        private DisparityTransform disparityTransform = new DisparityTransform();
+        private TemporalFilter temporalFilter = new TemporalFilter();
+        private Colorizer colorizer = new Colorizer();
 
         //Information about camera settings.
         private float distance = 0;
+        private float distancePixel = 0;
 
         //Bitmaps for holding depth and color frames.
         public Bitmap depthImage;
-        public Bitmap colorImage;
+        //public Bitmap colorImage;
+
+        //Create new configuration settings set for camera.
+        private Config cfg = new Config();
 
         //New camera information variable class.
         private Context ctx = new Context();
@@ -32,6 +52,7 @@ namespace RealSense_Viewer_Custom
         {
             InitializeComponent();
             InitializeDepthWorker();
+            InitializeDepthCheckWorker();
             InitializeRecordWorker();
         }
 
@@ -61,7 +82,7 @@ namespace RealSense_Viewer_Custom
 
         private void InitializeDepthWorker()
         {
-            //Initialize begin-work-finish parts for the worker thread.
+            //Initialize work-report-finish parts for the worker thread.
             depthWorker.DoWork += new DoWorkEventHandler(depthWorker_DoWork);
             depthWorker.RunWorkerCompleted += new RunWorkerCompletedEventHandler(depthWorker_RunWorkerCompleted);
             depthWorker.ProgressChanged += new ProgressChangedEventHandler(depthWorker_ProgressChanged);
@@ -86,29 +107,12 @@ namespace RealSense_Viewer_Custom
                         //Update camera connection label.
                         labelConnect.BeginInvoke(new InvokeDelegate(labelConnectInvokeOn));
 
-                        //Settings for streaming metadata.
-                        using var cfg = new Config();
+                        //Change configuration settings for the camera.
                         cfg.EnableStream(Stream.Depth, 640, 480);
+                        //cfg.EnableStream(Stream.Color, 640, 480);
 
-                        /// <summary>
-                        /// FRAME FILTERS
-                        /// <summary>
-
-                        //Convert depth to disparity.
-                        using var disparityTransform = new DisparityTransform();
-
-                        //Add a depth threshold filter.
-                        using var thresholdFilter = new ThresholdFilter();
-
-                        //Add a temporal filter to fill out holes.
-                        using var temporalFilter = new TemporalFilter();
-
-                        //Declare a new colorizer class for camera instance.
-                        using var colorizer = new Colorizer();
-
-                        //Create a new streaming-ready camera instance and start it.
-                        using var pipe = new Pipeline();
-                        pipe.Start(cfg);
+                        //Enable camera and start streaming with pre-set settings.
+                        pipeline.Start(cfg);
 
                         try
                         {
@@ -123,9 +127,9 @@ namespace RealSense_Viewer_Custom
                                 else
                                 {
                                     //Get camera depth from current frame.
-                                    using (var frameSet = pipe.WaitForFrames())
+                                    using (var frameSet = pipeline.WaitForFrames())
                                     using (var frame = frameSet.DepthFrame)
-                                    //using (var color = frames.ColorFrame)
+                                    //using (var color = frameSet.ColorFrame)
                                     {
                                         //Apply filters to the frame.
                                         var filteredFrame = thresholdFilter.Process(frame).DisposeWith(frameSet);
@@ -154,7 +158,7 @@ namespace RealSense_Viewer_Custom
                             MessageBox.Show("Error during runtime: " + error, "Error");
                         }
 
-                        pipe.Stop();
+                        pipeline.Stop();
                     }
                     else
                     {
@@ -177,13 +181,13 @@ namespace RealSense_Viewer_Custom
             if (e.ProgressPercentage == 1)
             {
                 //If flag is 1, output depth.
-                labelCameraInfo.Text = string.Format("Distance: {0:N3} meters", distance);
+                labelDistance.Text = string.Format("Middle-Point Distance: {0:N3} meters", distance);
                 pictureBox1.Image = depthImage;
             }
             else
             {
                 //Change output to none.
-                labelCameraInfo.Text = "Distance: ---";
+                labelDistance.Text = "Middle-Point Distance: ---";
             }
         }
 
@@ -196,7 +200,7 @@ namespace RealSense_Viewer_Custom
             }
 
             pictureBox1.Image = null;
-            labelCameraInfo.Text = "Distance: ---";
+            labelDistance.Text = "Middle-Point Distance: ---";
         }
 
         /// <summary>
@@ -216,6 +220,109 @@ namespace RealSense_Viewer_Custom
         private void buttonStreamInvokeOff()
         {
             buttonStream.Text = "Start Cam";
+        }
+
+        /// <summary>
+        /// PIXEL DEPTH CHECK FUNCTIONALITY
+        /// </summary>
+
+        private void pictureBox1_MouseHover(object sender, EventArgs e)
+        {
+            if (depthCheckWorker.IsBusy != true && depthStreaming != false)
+            {
+                depthCheckWorker.RunWorkerAsync();
+            }
+        }
+
+        private void pixtureBox1_MouseMove(object sender, MouseEventArgs e)
+        {
+            mouseX = e.Location.X + 1;
+            mouseY = e.Location.Y + 1;
+        }
+
+        private void InitializeDepthCheckWorker()
+        {
+            //Initialize work-report-finish parts for the worker thread.
+            depthCheckWorker.DoWork += new DoWorkEventHandler(depthCheckWorker_DoWork);
+            depthCheckWorker.RunWorkerCompleted += new RunWorkerCompletedEventHandler(depthCheckWorker_RunWorkerCompleted);
+            depthCheckWorker.ProgressChanged += new ProgressChangedEventHandler(depthCheckWorker_ProgressChanged);
+
+            //Worker actions: can be cancelled; report progress./
+            depthCheckWorker.WorkerSupportsCancellation = true;
+            depthCheckWorker.WorkerReportsProgress = true;
+        }
+
+        private void depthCheckWorker_DoWork(object sender, DoWorkEventArgs e)
+        {
+            using BackgroundWorker worker = sender as BackgroundWorker;
+            {
+                try
+                {
+
+                    while (depthStreaming == true)
+                    {
+                        //Set the latency to 25 milliseconds.
+                        Thread.Sleep(25);
+
+                        //Update mouse variables.
+
+                        using (var frameSet = pipeline.WaitForFrames())
+                        using (var frame = frameSet.DepthFrame)
+                        {
+                            using DepthFrame depthFrame = frameSet.DepthFrame;
+                            var depthArray = new ushort[frame.Width * frame.Height];
+                            depthFrame.CopyTo(depthArray);
+                            distancePixel = depthArray[(mouseY - 1) * 640 + (mouseX - 1)];
+                            distancePixel = distancePixel / 1000;
+                        }
+
+                        worker.ReportProgress(1);
+                    }
+                }
+                catch (Exception error)
+                {
+                    MessageBox.Show("Camera not connected!", "Error");
+                    worker.CancelAsync();
+                }
+                
+            }
+        }
+
+        private void depthCheckWorker_ProgressChanged(object sender, ProgressChangedEventArgs e)
+        {
+            //Check progress flags.
+            if (e.ProgressPercentage >= 1)
+            {
+                if (mouseX >= 2 && mouseX <= 639 && mouseY >= 2 && mouseY <= 479)
+                {
+                    labelDistancePixel.Text = string.Format("Distance: {0:N3} meters", distancePixel);
+                    labelPixel.Text = string.Format("Pixel: {0},{1}", mouseX, mouseY);
+                }
+                else
+                {
+                    //Change output to none.
+                    labelDistancePixel.Text = "Distance: ---";
+                    labelPixel.Text = "Pixel: ---,---";
+                }
+            }
+            else
+            {
+                //Change output to none.
+                labelDistancePixel.Text = "Distance: ---";
+                labelPixel.Text = "Pixel: ---,---";
+            }
+        }
+
+        private void depthCheckWorker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
+        {
+            //Set depth streaming back to false when method is not used anymore.
+            if (depthStreaming != false)
+            {
+                depthStreaming = !depthStreaming;
+            }
+
+            labelDistancePixel.Text = "Distance: ---";
+            labelPixel.Text = "Pixel: ---,---";
         }
 
         /// <summary>
