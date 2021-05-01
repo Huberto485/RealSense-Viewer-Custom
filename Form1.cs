@@ -109,7 +109,6 @@ namespace RealSense_Viewer_Custom
             {
                 depthPicture = true;
                 restarted = false;
-                depthStreaming = false;
             }
         }
 
@@ -163,7 +162,7 @@ namespace RealSense_Viewer_Custom
                                 {
                                     pipeline.Stop();
                                     cfgCapture.EnableRecordToFile(Directory.GetCurrentDirectory() + "/Media/" 
-                                        + new Random().Next(10000, 99999) + "_capture.bag");
+                                        + new Random().Next(10000, 99999) + "_video.bag");
                                     pipeline.Start(cfgCapture);
 
                                     while (depthRecording == true && depthStreaming == true)
@@ -193,12 +192,33 @@ namespace RealSense_Viewer_Custom
                                 {
                                     pipeline.Stop();
                                     cfgCapture.EnableRecordToFile(Directory.GetCurrentDirectory() + "/Media/"
-                                        + new Random().Next(10000, 99999) + "_capture.bag");
+                                        + new Random().Next(10000, 99999) + "_image.bag");
                                     pipeline.Start(cfgCapture);
+                                    Thread.Sleep(100);
 
+                                    while (depthPicture == true && depthStreaming == true)
+                                    {
+                                        //Get camera depth from current frame.
+                                        using (var frameSet = pipeline.WaitForFrames())
+                                        using (var frame = frameSet.DepthFrame)
+                                        {
+                                            //Apply filters to the frame.
+                                            var filteredFrame = thresholdFilter.Process(frame).DisposeWith(frameSet);
+                                            filteredFrame = disparityTransform.Process(filteredFrame).DisposeWith(frameSet);
+                                            filteredFrame = temporalFilter.Process(filteredFrame).DisposeWith(frameSet);
+                                            filteredFrame = colorizer.Process(filteredFrame).DisposeWith(frameSet);
+
+                                            //Put metadata from depth stream into its Bitmap.
+                                            depthImage = new Bitmap(frame.Width, frame.Height,
+                                                1920, System.Drawing.Imaging.PixelFormat.Format24bppRgb, filteredFrame.Data);
+
+                                            distance = frame.GetDistance(frame.Width / 2, frame.Height / 2);
+                                            //Update camera info panel.
+                                            worker.ReportProgress(1);
+                                            depthPicture = false;
+                                        }
+                                    }
                                     restarted = true;
-                                    depthPicture = false;
-
                                     random = new Random().Next(10000, 99999);
                                 }
                                 else if (restarted == true)
