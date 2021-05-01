@@ -1,1 +1,3 @@
-bin\Debug\net5.0-windows\Media\*.bag
+*.bag
+*_capture
+*_capture.bag
