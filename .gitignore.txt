@@ -1,1 +1,1 @@
-bin\Debug\net5.0-windows\Media
+bin\Debug\net5.0-windows\Media\*.bag
