@@ -85,7 +85,6 @@ namespace RealSense_Viewer_Custom
             this.buttonPlay.TabIndex = 2;
             this.buttonPlay.Text = "Play";
             this.buttonPlay.UseVisualStyleBackColor = false;
-            this.buttonPlay.Click += new System.EventHandler(this.buttonRecord_Click);
             // 
             // buttonRecord
             // 
@@ -96,6 +95,7 @@ namespace RealSense_Viewer_Custom
             this.buttonRecord.TabIndex = 3;
             this.buttonRecord.Text = "Record";
             this.buttonRecord.UseVisualStyleBackColor = false;
+            this.buttonRecord.Click += new System.EventHandler(this.buttonRecord_Click);
             // 
             // buttonPause
             // 
@@ -116,6 +116,7 @@ namespace RealSense_Viewer_Custom
             this.buttonPicture.TabIndex = 5;
             this.buttonPicture.Text = "Take Picture";
             this.buttonPicture.UseVisualStyleBackColor = false;
+            this.buttonPicture.Click += new System.EventHandler(this.buttonPicture_Click);
             // 
             // buttonLoad
             // 

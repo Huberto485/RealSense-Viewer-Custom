@@ -1,3 +1,3 @@
-!*.bag
-!*_capture
-!*_capture.bag
+*.bag
+*_capture
+*_capture.bag

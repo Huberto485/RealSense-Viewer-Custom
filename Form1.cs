@@ -3,6 +3,7 @@ using System.ComponentModel;
 using System.Windows.Forms;
 using System.Drawing;
 using System.Threading;
+using System.IO;
 using Intel.RealSense;
 
 namespace RealSense_Viewer_Custom
@@ -10,9 +11,11 @@ namespace RealSense_Viewer_Custom
     public partial class Form1 : Form
     {
         //Boolean values for logic inside functions.
-        private bool depthVideo = false;
+        private bool depthPicture = false;
+        private bool depthPlayback = false;
         private bool depthRecording = false;
         private bool depthStreaming = false;
+        private bool restarted = false;
 
         //Workers that work on different threads.
         private BackgroundWorker depthWorker = new BackgroundWorker();
@@ -23,14 +26,14 @@ namespace RealSense_Viewer_Custom
         private int mouseX = 0;
         private int mouseY = 0;
 
+        //Pipeline 
         private Pipeline pipeline = new Pipeline();
 
-        //Frame filters which get applied.
-        //Add a depth threshold filter.
-        private ThresholdFilter thresholdFilter = new ThresholdFilter();
-        private DisparityTransform disparityTransform = new DisparityTransform();
-        private TemporalFilter temporalFilter = new TemporalFilter();
-        private Colorizer colorizer = new Colorizer();
+        //Frame filters which are applied to the depth frame.
+        private ThresholdFilter thresholdFilter = new ThresholdFilter(); //Get min and max values that can be used to compare other values
+        private DisparityTransform disparityTransform = new DisparityTransform(); //Make the depth smoother
+        private TemporalFilter temporalFilter = new TemporalFilter(); //Reduce the amount of black spots (places of unknown depth)
+        private Colorizer colorizer = new Colorizer(); //Colourize the frame
 
         //Information about camera settings.
         private float distance = 0;
@@ -41,11 +44,13 @@ namespace RealSense_Viewer_Custom
         //public Bitmap colorImage;
 
         //Create new configuration settings set for camera.
-        private Config cfg = new Config();
+        private Config cfgDefault = new Config();
+        private Config cfgCapture = new Config();
 
         //New camera information variable class.
         private Context ctx = new Context();
 
+        //Create a delegate variable which can be used for DoWork stage task reporting.
         private delegate void InvokeDelegate();
 
         public Form1()
@@ -53,7 +58,6 @@ namespace RealSense_Viewer_Custom
             InitializeComponent();
             InitializeDepthWorker();
             InitializeDepthCheckWorker();
-            InitializeRecordWorker();
         }
 
         private void Form1_Load(object sender, EventArgs e)
@@ -65,18 +69,47 @@ namespace RealSense_Viewer_Custom
         /// DEPTH FUNCTIONALITY
         /// </summary>
 
-        //Button for this thread.
+        //Depth streaming button for this thread.
         private void buttonStream_Click(object sender, EventArgs e)
         {
             if (depthWorker.IsBusy != true)
             {
+                depthStreaming = true;
                 depthWorker.RunWorkerAsync();
                 buttonStream.Text = "Stop Cam";
             }
             else
             {
+                depthStreaming = false;
                 depthWorker.CancelAsync();
                 buttonStream.Text = "Start Cam";
+            }
+        }
+
+        //Depth recording button for this thread.
+        private void buttonRecord_Click(object sender, EventArgs e)
+        {
+            if (depthRecording != true)
+            {
+                restarted = false;
+                depthRecording = true;
+                buttonRecord.Text = "Stop";
+            }
+            else
+            {
+                restarted = true;
+                depthRecording = false;
+                buttonRecord.Text = "Record";
+            }
+        }
+
+        private void buttonPicture_Click(object sender, EventArgs e)
+        {
+            if (depthPicture != true)
+            {
+                depthPicture = true;
+                restarted = false;
+                depthStreaming = false;
             }
         }
 
@@ -96,40 +129,110 @@ namespace RealSense_Viewer_Custom
         {
             using BackgroundWorker worker = sender as BackgroundWorker;
             {
-                using var list = ctx.QueryDevices(); 
+                using var list = ctx.QueryDevices();
+
+                //Change configuration settings for the camera.
+                cfgDefault.EnableStream(Intel.RealSense.Stream.Depth, 640, 480);
+                cfgCapture.EnableStream(Intel.RealSense.Stream.Depth, 640, 480);
 
                 //Check if camera is already connected and streaming.
                 if (list.Count != 0)
                 {
-                    if (depthStreaming != true)
+                    if (depthStreaming == true)
                     {
-                        depthStreaming = !depthStreaming;
                         //Update camera connection label.
                         labelConnect.BeginInvoke(new InvokeDelegate(labelConnectInvokeOn));
 
-                        //Change configuration settings for the camera.
-                        cfg.EnableStream(Stream.Depth, 640, 480);
-                        //cfg.EnableStream(Stream.Color, 640, 480);
+                        var random = new Random().Next(10000,99999);
 
                         //Enable camera and start streaming with pre-set settings.
-                        pipeline.Start(cfg);
+                        pipeline.Start(cfgDefault);
 
                         try
                         {
                             while (depthStreaming == true)
                             {
+
                                 //Check for process cancellation.
                                 if (depthWorker.CancellationPending == true)
                                 {
                                     e.Cancel = true;
                                     break;
                                 }
+                                else if (depthRecording == true)
+                                {
+                                    pipeline.Stop();
+                                    cfgCapture.EnableRecordToFile(Directory.GetCurrentDirectory() + "/Media/" 
+                                        + new Random().Next(10000, 99999) + "_capture.bag");
+                                    pipeline.Start(cfgCapture);
+
+                                    while (depthRecording == true && depthStreaming == true)
+                                    {
+                                        //Get camera depth from current frame.
+                                        using (var frameSet = pipeline.WaitForFrames())
+                                        using (var frame = frameSet.DepthFrame)
+                                        {
+                                            //Apply filters to the frame.
+                                            var filteredFrame = thresholdFilter.Process(frame).DisposeWith(frameSet);
+                                            filteredFrame = disparityTransform.Process(filteredFrame).DisposeWith(frameSet);
+                                            filteredFrame = temporalFilter.Process(filteredFrame).DisposeWith(frameSet);
+                                            filteredFrame = colorizer.Process(filteredFrame).DisposeWith(frameSet);
+
+                                            //Put metadata from depth stream into its Bitmap.
+                                            depthImage = new Bitmap(frame.Width, frame.Height,
+                                                1920, System.Drawing.Imaging.PixelFormat.Format24bppRgb, filteredFrame.Data);
+
+                                            distance = frame.GetDistance(frame.Width / 2, frame.Height / 2);
+                                            //Update camera info panel.
+                                            worker.ReportProgress(1);
+                                        }
+                                    }
+                                    random = new Random().Next(10000,99999);
+                                }
+                                else if (depthPicture == true)
+                                {
+                                    pipeline.Stop();
+                                    cfgCapture.EnableRecordToFile(Directory.GetCurrentDirectory() + "/Media/"
+                                        + new Random().Next(10000, 99999) + "_capture.bag");
+                                    pipeline.Start(cfgCapture);
+
+                                    restarted = true;
+                                    depthPicture = false;
+
+                                    random = new Random().Next(10000, 99999);
+                                }
+                                else if (restarted == true)
+                                {
+                                    pipeline.Stop();
+                                    pipeline.Start(cfgDefault);
+
+                                    while (restarted == true && depthStreaming == true)
+                                    {
+                                        //Get camera depth from current frame.
+                                        using (var frameSet = pipeline.WaitForFrames())
+                                        using (var frame = frameSet.DepthFrame)
+                                        {
+                                            //Apply filters to the frame.
+                                            var filteredFrame = thresholdFilter.Process(frame).DisposeWith(frameSet);
+                                            filteredFrame = disparityTransform.Process(filteredFrame).DisposeWith(frameSet);
+                                            filteredFrame = temporalFilter.Process(filteredFrame).DisposeWith(frameSet);
+                                            filteredFrame = colorizer.Process(filteredFrame).DisposeWith(frameSet);
+
+                                            //Put metadata from depth stream into its Bitmap.
+                                            depthImage = new Bitmap(frame.Width, frame.Height,
+                                                1920, System.Drawing.Imaging.PixelFormat.Format24bppRgb, filteredFrame.Data);
+
+                                            distance = frame.GetDistance(frame.Width / 2, frame.Height / 2);
+                                            //Update camera info panel.
+                                            worker.ReportProgress(1);
+                                        }
+                                    }
+                                }
                                 else
                                 {
                                     //Get camera depth from current frame.
                                     using (var frameSet = pipeline.WaitForFrames())
                                     using (var frame = frameSet.DepthFrame)
-                                    //using (var color = frameSet.ColorFrame)
                                     {
                                         //Apply filters to the frame.
                                         var filteredFrame = thresholdFilter.Process(frame).DisposeWith(frameSet);
@@ -137,11 +240,9 @@ namespace RealSense_Viewer_Custom
                                         filteredFrame = temporalFilter.Process(filteredFrame).DisposeWith(frameSet);
                                         filteredFrame = colorizer.Process(filteredFrame).DisposeWith(frameSet);
 
-                                        //Put metadata from depth stream and color stream into their respective Bitmaps.
+                                        //Put metadata from depth stream into its Bitmap.
                                         depthImage = new Bitmap(frame.Width, frame.Height,
                                             1920, System.Drawing.Imaging.PixelFormat.Format24bppRgb, filteredFrame.Data);
-                                        //colorImage = new Bitmap(color.Width, color.Height,
-                                        //    color.Stride, System.Drawing.Imaging.PixelFormat.Format24bppRgb, color.Data);
 
                                         distance = frame.GetDistance(frame.Width / 2, frame.Height / 2);
                                         //Update camera info panel.
@@ -149,6 +250,10 @@ namespace RealSense_Viewer_Custom
                                     }
                                 }
                             }
+
+                            //Stop camera streaming.
+                            pipeline.Stop();
+
                         }
                         catch (Exception error)
                         {
@@ -157,21 +262,18 @@ namespace RealSense_Viewer_Custom
                             buttonStream.BeginInvoke(new InvokeDelegate(buttonStreamInvokeOff));
                             MessageBox.Show("Error during runtime: " + error, "Error");
                         }
-
-                        pipeline.Stop();
                     }
                     else
                     {
                         worker.ReportProgress(0);
+                        worker.CancelAsync();
                     }
                 }
-                else
-                {
-                    //Cancel thread action, reset button, and reset label.
-                    depthWorker.CancelAsync();
-                    buttonStream.BeginInvoke(new InvokeDelegate(buttonStreamInvokeOff));
-                    labelConnect.BeginInvoke(new InvokeDelegate(labelConnectInvokeOff));
-                }
+                
+                //If at any time this point is reached, cancel worker action.
+                depthWorker.CancelAsync();
+                buttonStream.BeginInvoke(new InvokeDelegate(buttonStreamInvokeOff));
+                labelConnect.BeginInvoke(new InvokeDelegate(labelConnectInvokeOff));
             }
         }
 
@@ -259,7 +361,7 @@ namespace RealSense_Viewer_Custom
                 try
                 {
 
-                    while (depthStreaming == true)
+                    while (depthStreaming == true || depthPlayback == true || depthPicture == true || depthRecording == true)
                     {
                         //Set the latency to 25 milliseconds.
                         Thread.Sleep(25);
@@ -324,78 +426,11 @@ namespace RealSense_Viewer_Custom
         }
 
         /// <summary>
-        /// TAKE PICTURE FUNCTIONALITY
-        /// </summary>
-
-        private void buttonPicture_Click()
-        {
-
-        }
-
-        /// <summary>
-        /// RECORDING FUNCTIONALITY
-        /// </summary>
-
-        private void buttonRecord_Click(object sender, EventArgs e)
-        {
-            if(recordWorker.IsBusy != true)
-            {
-                recordWorker.RunWorkerAsync();
-            }
-            else
-            {
-                recordWorker.CancelAsync();
-            }
-        }
-
-        private void InitializeRecordWorker()
-        {
-            //Initialize begin-work-finish parts for the worker thread.
-            recordWorker.DoWork += new DoWorkEventHandler(recordWorker_DoWork);
-            recordWorker.RunWorkerCompleted += new RunWorkerCompletedEventHandler(recordWorker_RunWorkerCompleted);
-            recordWorker.ProgressChanged += new ProgressChangedEventHandler(recordWorker_ProgressChanged);
-
-            //Worker actions: can be cancelled; report progress./
-            recordWorker.WorkerSupportsCancellation = true;
-            recordWorker.WorkerReportsProgress = true;
-        }
-
-        private void recordWorker_DoWork(object sender, DoWorkEventArgs e)
-        {
-            
-        }
-
-        private void recordWorker_ProgressChanged(object sender, ProgressChangedEventArgs e)
-        {
-            
-        }
-
-        private void recordWorker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
-        {
-            
-        }
-
-
-        /// <summary>
         /// LOADING FUNCTIONALITY
         /// </summary>
 
         /// Button 'Load File' click events.
         private void buttonLoad_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        /// <summary>
-        /// VISUAL FUNCTIONALITY
-        /// </summary>
-
-        private void buttonPlay_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        private void labelMenu2_Click(Object sender, EventArgs e)
         {
 
         }
