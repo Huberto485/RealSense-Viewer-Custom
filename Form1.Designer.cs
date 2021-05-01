@@ -47,6 +47,7 @@ namespace RealSense_Viewer_Custom
             this.buttonStream = new System.Windows.Forms.Button();
             this.labelPixel = new System.Windows.Forms.Label();
             this.labelDistancePixel = new System.Windows.Forms.Label();
+            this.openFileDialog1 = new System.Windows.Forms.OpenFileDialog();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox2)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox3)).BeginInit();
@@ -127,6 +128,7 @@ namespace RealSense_Viewer_Custom
             this.buttonLoad.TabIndex = 6;
             this.buttonLoad.Text = "Load File";
             this.buttonLoad.UseVisualStyleBackColor = false;
+            this.buttonLoad.Click += new System.EventHandler(this.buttonLoad_Click);
             // 
             // labelFileName
             // 
@@ -241,6 +243,10 @@ namespace RealSense_Viewer_Custom
             this.labelDistancePixel.TabIndex = 17;
             this.labelDistancePixel.Text = "Distance: ---";
             // 
+            // openFileDialog1
+            // 
+            this.openFileDialog1.FileName = "openFileDialog1";
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
@@ -307,6 +313,7 @@ namespace RealSense_Viewer_Custom
         private System.Windows.Forms.PictureBox pictureBox4;
         private System.Windows.Forms.PictureBox pictureBox5;
         private System.Windows.Forms.Label labelDistancePixel;
+        private System.Windows.Forms.OpenFileDialog openFileDialog1;
     }
 }
 

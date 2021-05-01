@@ -19,12 +19,14 @@ namespace RealSense_Viewer_Custom
 
         //Workers that work on different threads.
         private BackgroundWorker depthWorker = new BackgroundWorker();
-        private BackgroundWorker recordWorker = new BackgroundWorker();
         private BackgroundWorker depthCheckWorker = new BackgroundWorker();
 
         //Global mouse coordinates for mouse over depth stream.
         private int mouseX = 0;
         private int mouseY = 0;
+
+        //Variable to hold the file location to load.
+        private string file;
 
         //Pipeline 
         private Pipeline pipeline = new Pipeline();
@@ -41,11 +43,11 @@ namespace RealSense_Viewer_Custom
 
         //Bitmaps for holding depth and color frames.
         public Bitmap depthImage;
-        //public Bitmap colorImage;
 
         //Create new configuration settings set for camera.
         private Config cfgDefault = new Config();
         private Config cfgCapture = new Config();
+        private Config cfgPlayback = new Config();
 
         //New camera information variable class.
         private Context ctx = new Context();
@@ -68,6 +70,24 @@ namespace RealSense_Viewer_Custom
         /// <summary>
         /// DEPTH FUNCTIONALITY
         /// </summary>
+
+        private void buttonLoad_Click(object sender, EventArgs e)
+        {
+            if (openFileDialog1.ShowDialog() == DialogResult.OK)
+            {
+                try
+                {
+                    var filePath = openFileDialog1.FileName;
+                    file = filePath;
+                    labelFileName.Text = file.Substring(file.Length - 15);
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show($"Security error.\n\nError message: {ex.Message}\n\n" +
+                    $"Details:\n\n{ex.StackTrace}");
+                }
+            }
+        }
 
         //Depth streaming button for this thread.
         private void buttonStream_Click(object sender, EventArgs e)
@@ -157,6 +177,10 @@ namespace RealSense_Viewer_Custom
                                 {
                                     e.Cancel = true;
                                     break;
+                                }
+                                else if (depthPlayback == true)
+                                {
+
                                 }
                                 else if (depthRecording == true)
                                 {
@@ -443,16 +467,6 @@ namespace RealSense_Viewer_Custom
         {
             labelDistancePixel.Text = "Distance: ---";
             labelPixel.Text = "Pixel: ---,---";
-        }
-
-        /// <summary>
-        /// LOADING FUNCTIONALITY
-        /// </summary>
-
-        /// Button 'Load File' click events.
-        private void buttonLoad_Click(object sender, EventArgs e)
-        {
-
         }
     }
 }
