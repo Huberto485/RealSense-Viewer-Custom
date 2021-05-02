@@ -244,7 +244,7 @@ namespace RealSense_Viewer_Custom
             // 
             this.labelCameraBox.AutoSize = true;
             this.labelCameraBox.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(192)))), ((int)(((byte)(192)))), ((int)(((byte)(255)))));
-            this.labelCameraBox.Location = new System.Drawing.Point(603, 265);
+            this.labelCameraBox.Location = new System.Drawing.Point(608, 265);
             this.labelCameraBox.Name = "labelCameraBox";
             this.labelCameraBox.Size = new System.Drawing.Size(139, 15);
             this.labelCameraBox.TabIndex = 18;

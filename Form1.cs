@@ -31,7 +31,7 @@ namespace RealSense_Viewer_Custom
         //Variable to hold the file location to load.
         private string file;
 
-        //Pipeline 
+        //Pipeline variable for global camera information - required as depth workers and checker can communicate same pipeline info.
         private Pipeline pipeline = new Pipeline();
 
         //Frame filters which are applied to the depth frame.
@@ -64,6 +64,9 @@ namespace RealSense_Viewer_Custom
             InitializeDepthWorker();
             InitializeDepthCheckWorker();
             InitializePlaybackWorker();
+            buttonPicture.Enabled = false;
+            buttonRecord.Enabled = false;
+            buttonPlay.Enabled = false;
         }
 
         private void Form1_Load(object sender, EventArgs e)
@@ -78,17 +81,21 @@ namespace RealSense_Viewer_Custom
         //Loading depth file functionality.
         private void buttonLoad_Click(object sender, EventArgs e)
         {
+            //Check whether a valid option was chosen.
             if (openFileDialog1.ShowDialog() == DialogResult.OK)
             {
                 try
                 {
+                    //Get file path.
                     var filePath = openFileDialog1.FileName;
 
+                    //Check whether a depth worker is enabled.
                     if (depthCheckWorker.IsBusy == false)
                     {
                         depthCheckWorker.RunWorkerAsync();
                     }
 
+                    //Check if this was an action taken during depth streaming.
                     if (depthWorker.IsBusy == true)
                     {
                         depthRecording = false;
@@ -96,26 +103,23 @@ namespace RealSense_Viewer_Custom
                         depthWorker.CancelAsync();
                     }
 
-                    Thread.Sleep(100);
+                    //Set variables.
+                    buttonLoad.Enabled = false;
+                    buttonPlay.Enabled = true;
                     depthPlayback = true;
                     labelCameraBox.Text = null;
                     paused = true;
 
+                    //Pass the file path to a global variable.
                     file = filePath;
                     labelFileName.Text = file.Substring(file.Length - 15);
 
-                    if (playbackWorker.IsBusy == true)
-                    {
-                        playbackWorker.CancelAsync();
-                    }
-                    else
-                    {
-                        playbackWorker.RunWorkerAsync();
-                    }
-
+                    //Enable the playback thread.
+                    playbackWorker.RunWorkerAsync();
                 }
                 catch (Exception ex)
                 {
+                    //If an exception is thrown during file searching - throw an error.
                     MessageBox.Show($"Security error.\n\nError message: {ex.Message}\n\n" +
                     $"Details:\n\n{ex.StackTrace}");
                 }
@@ -125,15 +129,25 @@ namespace RealSense_Viewer_Custom
         //Depth streaming button for this thread.
         private void buttonStream_Click(object sender, EventArgs e)
         {
+            //If this button was clicked while viewing media - cancel that thread.
+            if (playbackWorker.IsBusy == true)
+            {
+                playbackWorker.CancelAsync();
+            }
+
+            //Check if the button is clicked while streaming or not.
             if (depthWorker.IsBusy != true)
             {
-                if (playbackWorker.IsBusy == true)
-                {
-                    playbackWorker.CancelAsync();
-                }
+                //Enable buttons.
+                buttonRecord.Enabled = true;
+                buttonPicture.Enabled = true;
 
+                //Set variable.
                 depthStreaming = true;
+
+                //Start the thread.
                 depthWorker.RunWorkerAsync();
+
                 labelCameraBox.Text = null;
                 buttonStream.Text = "Stop Cam";
             }
@@ -148,6 +162,7 @@ namespace RealSense_Viewer_Custom
         //Depth recording button for this thread.
         private void buttonRecord_Click(object sender, EventArgs e)
         {
+            //Check if the button was previously clicked.
             if (depthRecording != true)
             {
                 restarted = false;
@@ -175,7 +190,8 @@ namespace RealSense_Viewer_Custom
         //Play button functionality.
         private void buttonPlay_Click(object sender, EventArgs e)
         {
-            if (paused == false)
+            //Check if the button was previously clicked.
+            if (paused != true)
             {
                 paused = true;
                 waitingToStop = true;
@@ -218,6 +234,7 @@ namespace RealSense_Viewer_Custom
                         //Update camera connection label.
                         labelConnect.BeginInvoke(new InvokeDelegate(labelConnectInvokeOn));
 
+                        //Generate a random number.
                         var random = new Random().Next(10000,99999);
 
                         //Enable camera and start streaming with pre-set settings.
@@ -233,16 +250,6 @@ namespace RealSense_Viewer_Custom
                                 {
                                     e.Cancel = true;
                                     break;
-                                }
-                                else if (depthPlayback == true)
-                                {
-                                    pipeline.Stop();
-                                    using ( var playback = ctx.AddDevice(file))
-                                    using ( var sensor = playback.Sensors[0])
-                                    {
-                                        System.Diagnostics.Debug.WriteLine(file);
-                                    }
-                                    
                                 }
                                 else if (depthRecording == true)
                                 {
@@ -412,6 +419,8 @@ namespace RealSense_Viewer_Custom
                 depthCheckWorker.CancelAsync();
             }
 
+            buttonRecord.Enabled = false;
+            buttonPicture.Enabled = false;
             labelCameraBox.Text = "Camera is not streaming!";
             pictureBox1.Image = null;
             labelDistance.Text = "Centre-Point Distance: ---";
@@ -480,7 +489,7 @@ namespace RealSense_Viewer_Custom
 
                     while (depthStreaming == true || depthPlayback == true || depthPicture == true || depthRecording == true)
                     {
-                        //Set the latency to 25 milliseconds.
+                        //Set the latency to 25 milliseconds - REQUIRED!
                         Thread.Sleep(25);
 
                         //Get frameSet from the pipeline and then get an individual frame.
@@ -503,9 +512,12 @@ namespace RealSense_Viewer_Custom
 
                             while (paused == true && depthPlayback == true)
                             {
+                                //Set the latency to 25 milliseconds - REQUIRED!
                                 Thread.Sleep(25);
+
                                 distancePixel = depthArray[(mouseY - 1) * 640 + (mouseX - 1)];
                                 distancePixel /= 1000;
+
                                 labelDistancePixel.BeginInvoke(new InvokeDelegate(updatePixelDistance));
                                 labelPixel.BeginInvoke(new InvokeDelegate(updatePixelValue));
                             }
@@ -583,6 +595,7 @@ namespace RealSense_Viewer_Custom
 
         private void playbackWorker_DoWork(object sender, DoWorkEventArgs e)
         {
+            //If the thread was enabled while recording or streaming data already - disable it and reset variables.
             if (depthWorker.IsBusy == true)
             {
                 depthRecording = false;
@@ -592,13 +605,16 @@ namespace RealSense_Viewer_Custom
 
             using BackgroundWorker worker = sender as BackgroundWorker;
             {
+                //Count repeats.
                 var i = 0;
                 while (depthPlayback == true)
                 {
+                    //Check if video is being replayed automatically.
                     if ( i > 0)
                     {
                         pipeline.Stop();
                     }
+                    //Create a playback device with new settings.
                     cfgPlayback.EnableDeviceFromFile(@file, repeat: false);
                     using (var device = pipeline.Start(cfgPlayback).Device)
                     using (var playback = PlaybackDevice.FromDevice(device))
@@ -627,23 +643,29 @@ namespace RealSense_Viewer_Custom
                                     worker.ReportProgress(1);
                                 }
 
+                                //Look out for a stop flag.
                                 if (waitingToStop == true)
                                 {
+                                    //Reset the flag.
                                     waitingToStop = false;
 
+                                    //Pause the file reader.
                                     playback.Pause();
 
+                                    //Deactivate thread until button is clicked again.
                                     while (paused == true)
                                     {
                                         Thread.Sleep(25);
                                     }
 
+                                    //Resume the file reader.
                                     playback.Resume();
                                 }
                             }
                         }
                         catch (Exception error)
                         {
+                            //Exception thrown if there is no more data to stream - end of recording.
                             depthPlayback = false;
                             MessageBox.Show("End of recording!", "Recording finished!");
                         }
@@ -684,12 +706,16 @@ namespace RealSense_Viewer_Custom
                 depthCheckWorker.CancelAsync();
             }
 
+            //Reset variables for loading of next file.
             waitingToStop = true;
             paused = true;
-            buttonPlay.Text = "Play";
-            pictureBox1.Image = null;
-            labelFileName.Text = "No File Selected!";
 
+            //Reset camera info panel.
+            buttonLoad.Enabled = true;
+            buttonPlay.Enabled = false;
+            pictureBox1.Image = null;
+            buttonPlay.Text = "Play";
+            labelFileName.Text = "No File Selected!";
             labelCameraBox.Text = "Camera is not streaming!";
             labelDistance.Text = "Centre-Point Distance: ---";
         }
