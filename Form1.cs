@@ -16,10 +16,13 @@ namespace RealSense_Viewer_Custom
         private bool depthRecording = false;
         private bool depthStreaming = false;
         private bool restarted = false;
+        private bool waitingToStop = true;
+        private bool paused = false;
 
         //Workers that work on different threads.
         private BackgroundWorker depthWorker = new BackgroundWorker();
         private BackgroundWorker depthCheckWorker = new BackgroundWorker();
+        private BackgroundWorker playbackWorker = new BackgroundWorker();
 
         //Global mouse coordinates for mouse over depth stream.
         private int mouseX = 0;
@@ -60,6 +63,7 @@ namespace RealSense_Viewer_Custom
             InitializeComponent();
             InitializeDepthWorker();
             InitializeDepthCheckWorker();
+            InitializePlaybackWorker();
         }
 
         private void Form1_Load(object sender, EventArgs e)
@@ -71,6 +75,7 @@ namespace RealSense_Viewer_Custom
         /// DEPTH FUNCTIONALITY
         /// </summary>
 
+        //Loading depth file functionality.
         private void buttonLoad_Click(object sender, EventArgs e)
         {
             if (openFileDialog1.ShowDialog() == DialogResult.OK)
@@ -78,8 +83,36 @@ namespace RealSense_Viewer_Custom
                 try
                 {
                     var filePath = openFileDialog1.FileName;
+
+                    if (depthCheckWorker.IsBusy == false)
+                    {
+                        depthCheckWorker.RunWorkerAsync();
+                    }
+
+                    if (depthWorker.IsBusy == true)
+                    {
+                        depthRecording = false;
+                        depthStreaming = false;
+                        depthWorker.CancelAsync();
+                    }
+
+                    Thread.Sleep(100);
+                    depthPlayback = true;
+                    labelCameraBox.Text = null;
+                    paused = true;
+
                     file = filePath;
                     labelFileName.Text = file.Substring(file.Length - 15);
+
+                    if (playbackWorker.IsBusy == true)
+                    {
+                        playbackWorker.CancelAsync();
+                    }
+                    else
+                    {
+                        playbackWorker.RunWorkerAsync();
+                    }
+
                 }
                 catch (Exception ex)
                 {
@@ -94,6 +127,11 @@ namespace RealSense_Viewer_Custom
         {
             if (depthWorker.IsBusy != true)
             {
+                if (playbackWorker.IsBusy == true)
+                {
+                    playbackWorker.CancelAsync();
+                }
+
                 depthStreaming = true;
                 depthWorker.RunWorkerAsync();
                 labelCameraBox.Text = null;
@@ -124,12 +162,29 @@ namespace RealSense_Viewer_Custom
             }
         }
 
+        //Take Picture button functionality.
         private void buttonPicture_Click(object sender, EventArgs e)
         {
             if (depthPicture != true)
             {
                 depthPicture = true;
                 restarted = false;
+            }
+        }
+
+        //Play button functionality.
+        private void buttonPlay_Click(object sender, EventArgs e)
+        {
+            if (paused == false)
+            {
+                paused = true;
+                waitingToStop = true;
+                buttonPlay.Text = "Play";
+            }
+            else
+            {
+                paused = false;
+                buttonPlay.Text = "Pause";
             }
         }
 
@@ -181,7 +236,13 @@ namespace RealSense_Viewer_Custom
                                 }
                                 else if (depthPlayback == true)
                                 {
-
+                                    pipeline.Stop();
+                                    using ( var playback = ctx.AddDevice(file))
+                                    using ( var sensor = playback.Sensors[0])
+                                    {
+                                        System.Diagnostics.Debug.WriteLine(file);
+                                    }
+                                    
                                 }
                                 else if (depthRecording == true)
                                 {
@@ -346,6 +407,11 @@ namespace RealSense_Viewer_Custom
                 depthStreaming = !depthStreaming;
             }
 
+            if (depthCheckWorker.IsBusy == true)
+            {
+                depthCheckWorker.CancelAsync();
+            }
+
             labelCameraBox.Text = "Camera is not streaming!";
             pictureBox1.Image = null;
             labelDistance.Text = "Centre-Point Distance: ---";
@@ -380,6 +446,10 @@ namespace RealSense_Viewer_Custom
             {
                 depthCheckWorker.RunWorkerAsync();
             }
+            else if (depthCheckWorker.IsBusy != true && depthPlayback != false)
+            {
+                depthCheckWorker.RunWorkerAsync();
+            }
         }
 
         private void pixtureBox1_MouseMove(object sender, MouseEventArgs e)
@@ -402,6 +472,7 @@ namespace RealSense_Viewer_Custom
 
         private void depthCheckWorker_DoWork(object sender, DoWorkEventArgs e)
         {
+
             using BackgroundWorker worker = sender as BackgroundWorker;
             {
                 try
@@ -427,9 +498,18 @@ namespace RealSense_Viewer_Custom
                             //Get mouseY value, multiply it by 640 and add mouseX value to get depth index.
                             distancePixel = depthArray[(mouseY - 1) * 640 + (mouseX - 1)];
                             distancePixel /= 1000;
-                        }
 
-                        worker.ReportProgress(1);
+                            worker.ReportProgress(1);
+
+                            while (paused == true && depthPlayback == true)
+                            {
+                                Thread.Sleep(25);
+                                distancePixel = depthArray[(mouseY - 1) * 640 + (mouseX - 1)];
+                                distancePixel /= 1000;
+                                labelDistancePixel.BeginInvoke(new InvokeDelegate(updatePixelDistance));
+                                labelPixel.BeginInvoke(new InvokeDelegate(updatePixelValue));
+                            }
+                        }
                     }
                 }
                 catch (Exception error)
@@ -469,6 +549,149 @@ namespace RealSense_Viewer_Custom
         {
             labelDistancePixel.Text = "Distance: ---";
             labelPixel.Text = "Pixel: ---,---";
+        }
+
+        /// <summary>
+        /// DEPTH CHECK WORKER DELEGATES
+        /// </summary>
+
+        private void updatePixelDistance()
+        {
+            labelDistancePixel.Text = string.Format("Distance: {0:N3} meters", distancePixel);
+        }
+
+        private void updatePixelValue()
+        {
+            labelPixel.Text = string.Format("Pixel: {0},{1}", mouseX, mouseY);
+        }
+
+        /// <summary>
+        /// PLAYBACK FUNCTIONALITY
+        /// </summary>
+
+        private void InitializePlaybackWorker()
+        {
+            //Initialize work-report-finish parts for the worker thread.
+            playbackWorker.DoWork += new DoWorkEventHandler(playbackWorker_DoWork);
+            playbackWorker.RunWorkerCompleted += new RunWorkerCompletedEventHandler(playbackWorker_RunWorkerCompleted);
+            playbackWorker.ProgressChanged += new ProgressChangedEventHandler(playbackWorker_ProgressChanged);
+
+            //Worker actions: can be cancelled; report progress./
+            playbackWorker.WorkerSupportsCancellation = true;
+            playbackWorker.WorkerReportsProgress = true;
+        }
+
+        private void playbackWorker_DoWork(object sender, DoWorkEventArgs e)
+        {
+            if (depthWorker.IsBusy == true)
+            {
+                depthRecording = false;
+                depthStreaming = false;
+                depthWorker.CancelAsync();
+            }
+
+            using BackgroundWorker worker = sender as BackgroundWorker;
+            {
+                var i = 0;
+                while (depthPlayback == true)
+                {
+                    if ( i > 0)
+                    {
+                        pipeline.Stop();
+                    }
+                    cfgPlayback.EnableDeviceFromFile(@file, repeat: false);
+                    using (var device = pipeline.Start(cfgPlayback).Device)
+                    using (var playback = PlaybackDevice.FromDevice(device))
+                    {
+                        try
+                        {
+                            while (depthPlayback == true)
+                            {
+                                //Get camera depth from current frame.
+                                using (var frameSet = pipeline.WaitForFrames())
+                                using (var frame = frameSet.DepthFrame)
+                                {
+                                    //Apply filters to the frame.
+                                    var filteredFrame = thresholdFilter.Process(frame).DisposeWith(frameSet);
+                                    filteredFrame = disparityTransform.Process(filteredFrame).DisposeWith(frameSet);
+                                    filteredFrame = temporalFilter.Process(filteredFrame).DisposeWith(frameSet);
+                                    filteredFrame = colorizer.Process(filteredFrame).DisposeWith(frameSet);
+
+                                    //Put metadata from depth stream into its Bitmap.
+                                    depthImage = new Bitmap(frame.Width, frame.Height,
+                                        1920, System.Drawing.Imaging.PixelFormat.Format24bppRgb, filteredFrame.Data);
+
+                                    distance = frame.GetDistance(frame.Width / 2, frame.Height / 2);
+
+                                    //Update camera info panel.
+                                    worker.ReportProgress(1);
+                                }
+
+                                if (waitingToStop == true)
+                                {
+                                    waitingToStop = false;
+
+                                    playback.Pause();
+
+                                    while (paused == true)
+                                    {
+                                        Thread.Sleep(25);
+                                    }
+
+                                    playback.Resume();
+                                }
+                            }
+                        }
+                        catch (Exception error)
+                        {
+                            depthPlayback = false;
+                            MessageBox.Show("End of recording!", "Recording finished!");
+                        }
+                    }
+                    i++;
+                }
+                pipeline.Stop();
+                worker.CancelAsync();
+            }
+        }
+
+        private void playbackWorker_ProgressChanged (object sender, ProgressChangedEventArgs e)
+        {
+            //Check progress flags.
+            if (e.ProgressPercentage == 1)
+            {
+                //If flag is 1, output depth.
+                labelDistance.Text = string.Format("Centre-Point Distance: {0:N3} meters", distance);
+                pictureBox1.Image = depthImage;
+            }
+            else
+            {
+                //Change output to none.
+                labelDistance.Text = "Centre-Point Distance: ---";
+            }
+        }
+
+        private void playbackWorker_RunWorkerCompleted (object sender, RunWorkerCompletedEventArgs e)
+        {
+            //Set depth streaming back to false when method is not used anymore.
+            if (depthPlayback != false)
+            {
+                depthPlayback = !depthPlayback;
+            }
+
+            if (depthCheckWorker.IsBusy == true)
+            {
+                depthCheckWorker.CancelAsync();
+            }
+
+            waitingToStop = true;
+            paused = true;
+            buttonPlay.Text = "Play";
+            pictureBox1.Image = null;
+            labelFileName.Text = "No File Selected!";
+
+            labelCameraBox.Text = "Camera is not streaming!";
+            labelDistance.Text = "Centre-Point Distance: ---";
         }
     }
 }

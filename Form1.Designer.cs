@@ -33,7 +33,6 @@ namespace RealSense_Viewer_Custom
             this.labelMenu1 = new System.Windows.Forms.Label();
             this.buttonPlay = new System.Windows.Forms.Button();
             this.buttonRecord = new System.Windows.Forms.Button();
-            this.buttonPause = new System.Windows.Forms.Button();
             this.buttonPicture = new System.Windows.Forms.Button();
             this.buttonLoad = new System.Windows.Forms.Button();
             this.labelFileName = new System.Windows.Forms.Label();
@@ -83,17 +82,18 @@ namespace RealSense_Viewer_Custom
             // buttonPlay
             // 
             this.buttonPlay.BackColor = System.Drawing.SystemColors.Control;
-            this.buttonPlay.Location = new System.Drawing.Point(633, 513);
+            this.buttonPlay.Location = new System.Drawing.Point(638, 513);
             this.buttonPlay.Name = "buttonPlay";
             this.buttonPlay.Size = new System.Drawing.Size(75, 23);
             this.buttonPlay.TabIndex = 2;
             this.buttonPlay.Text = "Play";
             this.buttonPlay.UseVisualStyleBackColor = false;
+            this.buttonPlay.Click += new System.EventHandler(this.buttonPlay_Click);
             // 
             // buttonRecord
             // 
             this.buttonRecord.BackColor = System.Drawing.SystemColors.Control;
-            this.buttonRecord.Location = new System.Drawing.Point(552, 513);
+            this.buttonRecord.Location = new System.Drawing.Point(901, 513);
             this.buttonRecord.Name = "buttonRecord";
             this.buttonRecord.Size = new System.Drawing.Size(75, 23);
             this.buttonRecord.TabIndex = 3;
@@ -101,20 +101,10 @@ namespace RealSense_Viewer_Custom
             this.buttonRecord.UseVisualStyleBackColor = false;
             this.buttonRecord.Click += new System.EventHandler(this.buttonRecord_Click);
             // 
-            // buttonPause
-            // 
-            this.buttonPause.BackColor = System.Drawing.SystemColors.Control;
-            this.buttonPause.Location = new System.Drawing.Point(714, 513);
-            this.buttonPause.Name = "buttonPause";
-            this.buttonPause.Size = new System.Drawing.Size(75, 23);
-            this.buttonPause.TabIndex = 4;
-            this.buttonPause.Text = "Pause";
-            this.buttonPause.UseVisualStyleBackColor = false;
-            // 
             // buttonPicture
             // 
             this.buttonPicture.BackColor = System.Drawing.SystemColors.Control;
-            this.buttonPicture.Location = new System.Drawing.Point(355, 513);
+            this.buttonPicture.Location = new System.Drawing.Point(352, 513);
             this.buttonPicture.Name = "buttonPicture";
             this.buttonPicture.Size = new System.Drawing.Size(91, 23);
             this.buttonPicture.TabIndex = 5;
@@ -254,7 +244,7 @@ namespace RealSense_Viewer_Custom
             // 
             this.labelCameraBox.AutoSize = true;
             this.labelCameraBox.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(192)))), ((int)(((byte)(192)))), ((int)(((byte)(255)))));
-            this.labelCameraBox.Location = new System.Drawing.Point(606, 265);
+            this.labelCameraBox.Location = new System.Drawing.Point(603, 265);
             this.labelCameraBox.Name = "labelCameraBox";
             this.labelCameraBox.Size = new System.Drawing.Size(139, 15);
             this.labelCameraBox.TabIndex = 18;
@@ -285,7 +275,6 @@ namespace RealSense_Viewer_Custom
             this.Controls.Add(this.labelFileName);
             this.Controls.Add(this.buttonLoad);
             this.Controls.Add(this.buttonPicture);
-            this.Controls.Add(this.buttonPause);
             this.Controls.Add(this.buttonRecord);
             this.Controls.Add(this.buttonPlay);
             this.Controls.Add(this.labelMenu1);
@@ -318,7 +307,6 @@ namespace RealSense_Viewer_Custom
         /// Buttons  
         private System.Windows.Forms.Button buttonPlay;
         private System.Windows.Forms.Button buttonRecord;
-        private System.Windows.Forms.Button buttonPause;
         private System.Windows.Forms.Button buttonPicture;
         private System.Windows.Forms.Button buttonLoad;
         private System.Windows.Forms.Button buttonStream;
