@@ -96,6 +96,7 @@ namespace RealSense_Viewer_Custom
             {
                 depthStreaming = true;
                 depthWorker.RunWorkerAsync();
+                labelCameraBox.Text = null;
                 buttonStream.Text = "Stop Cam";
             }
             else
@@ -345,6 +346,7 @@ namespace RealSense_Viewer_Custom
                 depthStreaming = !depthStreaming;
             }
 
+            labelCameraBox.Text = "Camera is not streaming!";
             pictureBox1.Image = null;
             labelDistance.Text = "Centre-Point Distance: ---";
         }
