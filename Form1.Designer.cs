@@ -120,7 +120,7 @@ namespace RealSense_Viewer_Custom
             // buttonLoad
             // 
             this.buttonLoad.BackColor = System.Drawing.SystemColors.Control;
-            this.buttonLoad.Location = new System.Drawing.Point(22, 54);
+            this.buttonLoad.Location = new System.Drawing.Point(21, 54);
             this.buttonLoad.Name = "buttonLoad";
             this.buttonLoad.Size = new System.Drawing.Size(75, 23);
             this.buttonLoad.TabIndex = 6;
@@ -133,7 +133,7 @@ namespace RealSense_Viewer_Custom
             this.labelFileName.AutoSize = true;
             this.labelFileName.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(128)))), ((int)(((byte)(106)))), ((int)(((byte)(200)))));
             this.labelFileName.ForeColor = System.Drawing.SystemColors.ActiveCaptionText;
-            this.labelFileName.Location = new System.Drawing.Point(103, 58);
+            this.labelFileName.Location = new System.Drawing.Point(102, 58);
             this.labelFileName.Name = "labelFileName";
             this.labelFileName.Size = new System.Drawing.Size(94, 15);
             this.labelFileName.TabIndex = 7;
@@ -166,7 +166,7 @@ namespace RealSense_Viewer_Custom
             this.pictureBox2.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(128)))), ((int)(((byte)(106)))), ((int)(((byte)(200)))));
             this.pictureBox2.Location = new System.Drawing.Point(12, 197);
             this.pictureBox2.Name = "pictureBox2";
-            this.pictureBox2.Size = new System.Drawing.Size(300, 102);
+            this.pictureBox2.Size = new System.Drawing.Size(300, 347);
             this.pictureBox2.TabIndex = 10;
             this.pictureBox2.TabStop = false;
             // 
@@ -193,7 +193,7 @@ namespace RealSense_Viewer_Custom
             this.labelDistance.AutoSize = true;
             this.labelDistance.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(128)))), ((int)(((byte)(106)))), ((int)(((byte)(200)))));
             this.labelDistance.ForeColor = System.Drawing.SystemColors.ActiveCaptionText;
-            this.labelDistance.Location = new System.Drawing.Point(21, 270);
+            this.labelDistance.Location = new System.Drawing.Point(21, 241);
             this.labelDistance.Name = "labelDistance";
             this.labelDistance.Size = new System.Drawing.Size(144, 15);
             this.labelDistance.TabIndex = 14;
@@ -215,7 +215,7 @@ namespace RealSense_Viewer_Custom
             this.labelPixel.AutoSize = true;
             this.labelPixel.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(128)))), ((int)(((byte)(106)))), ((int)(((byte)(200)))));
             this.labelPixel.ForeColor = System.Drawing.SystemColors.ActiveCaptionText;
-            this.labelPixel.Location = new System.Drawing.Point(22, 242);
+            this.labelPixel.Location = new System.Drawing.Point(22, 270);
             this.labelPixel.Name = "labelPixel";
             this.labelPixel.Size = new System.Drawing.Size(71, 15);
             this.labelPixel.TabIndex = 16;
@@ -226,7 +226,7 @@ namespace RealSense_Viewer_Custom
             this.labelDistancePixel.AutoSize = true;
             this.labelDistancePixel.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(128)))), ((int)(((byte)(106)))), ((int)(((byte)(200)))));
             this.labelDistancePixel.ForeColor = System.Drawing.SystemColors.ActiveCaptionText;
-            this.labelDistancePixel.Location = new System.Drawing.Point(102, 242);
+            this.labelDistancePixel.Location = new System.Drawing.Point(102, 270);
             this.labelDistancePixel.Name = "labelDistancePixel";
             this.labelDistancePixel.Size = new System.Drawing.Size(73, 15);
             this.labelDistancePixel.TabIndex = 17;
@@ -276,7 +276,8 @@ namespace RealSense_Viewer_Custom
             // labelMaxValue
             // 
             this.labelMaxValue.AutoSize = true;
-            this.labelMaxValue.Location = new System.Drawing.Point(190, 333);
+            this.labelMaxValue.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(128)))), ((int)(((byte)(106)))), ((int)(((byte)(200)))));
+            this.labelMaxValue.Location = new System.Drawing.Point(88, 306);
             this.labelMaxValue.Name = "labelMaxValue";
             this.labelMaxValue.Size = new System.Drawing.Size(51, 15);
             this.labelMaxValue.TabIndex = 21;
@@ -285,7 +286,8 @@ namespace RealSense_Viewer_Custom
             // labelMinValue
             // 
             this.labelMinValue.AutoSize = true;
-            this.labelMinValue.Location = new System.Drawing.Point(190, 529);
+            this.labelMinValue.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(128)))), ((int)(((byte)(106)))), ((int)(((byte)(200)))));
+            this.labelMinValue.Location = new System.Drawing.Point(88, 502);
             this.labelMinValue.Name = "labelMinValue";
             this.labelMinValue.Size = new System.Drawing.Size(49, 15);
             this.labelMinValue.TabIndex = 22;
@@ -295,7 +297,7 @@ namespace RealSense_Viewer_Custom
             // 
             this.pictureDepthBar.ImageLocation = "";
             this.pictureDepthBar.InitialImage = null;
-            this.pictureDepthBar.Location = new System.Drawing.Point(125, 333);
+            this.pictureDepthBar.Location = new System.Drawing.Point(21, 306);
             this.pictureDepthBar.Name = "pictureDepthBar";
             this.pictureDepthBar.Size = new System.Drawing.Size(59, 211);
             this.pictureDepthBar.TabIndex = 23;
