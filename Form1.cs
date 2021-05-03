@@ -82,16 +82,18 @@ namespace RealSense_Viewer_Custom
 
         private void loadFileNames()
         {
-
+            //Get list of files from the media folder.
             string[] listOfFiles = Directory.GetFiles(Directory.GetCurrentDirectory() + "/Media/");
             labelListOfFiles.Text = "Your recordings:" + "\n";
 
+            //If there are no files, update the label.
             if (listOfFiles.Length == 0)
             {
                 labelListOfFiles.Text = "There are no previous recordings!";
             }
             else if (listOfFiles.Length > 0 && listOfFiles.Length < 3)
             {
+                //If there are less than 3 files, update the label using max value.
                 for (int i = 0; i < listOfFiles.Length; i++)
                 {
                     labelListOfFiles.Text += listOfFiles[i].Substring(listOfFiles[i].Length - 15) + "\n";
@@ -99,6 +101,7 @@ namespace RealSense_Viewer_Custom
             }
             else
             {
+                //If there are more than 3 files, just show the first 3 files.
                 for (int i = 0; i < 3; i++)
                 {
                     labelListOfFiles.Text += listOfFiles[i].Substring(listOfFiles[i].Length - 15) + "\n";
@@ -315,6 +318,7 @@ namespace RealSense_Viewer_Custom
                                             worker.ReportProgress(1);
                                         }
                                     }
+                                    //Finish video and restart with default settings.
                                     pipeline.Stop();
                                     pipeline.Start(cfgDefault);
 
@@ -351,6 +355,7 @@ namespace RealSense_Viewer_Custom
                                             depthPicture = false;
                                         }
                                     }
+                                    //Finish image and start with default settings.
                                     pipeline.Stop();
                                     pipeline.Start(cfgDefault);
 
@@ -561,14 +566,18 @@ namespace RealSense_Viewer_Custom
                             distancePixel = depthArray[(mouseY - 1) * 640 + (mouseX - 1)];
                             distancePixel /= 1000;
 
+                            //Update max value
                             distancePixelMax = depthArray.Where(x => x < 4000).Max();
                             distancePixelMax /= 1000;
 
+                            //Update min value.
                             distancePixelMin = depthArray.Where(x => x != 0).DefaultIfEmpty().Min();
                             distancePixelMin /= 1000;
 
                             worker.ReportProgress(1);
 
+                            //While a video is being played and its paused, repeat these settings without reporting data.
+                            //Update data by using delegates instead.
                             while (paused == true && depthPlayback == true)
                             {
                                 //Set the latency to 25 milliseconds - REQUIRED!
@@ -635,6 +644,7 @@ namespace RealSense_Viewer_Custom
 
         private void depthCheckWorker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
+            //Reset labels.
             labelDistancePixel.Text = "Distance: ---";
             labelPixel.Text = "Pixel: ---,---";
             labelMaxValue.Text = "Max: ---";
@@ -808,7 +818,7 @@ namespace RealSense_Viewer_Custom
             waitingToStop = true;
             paused = true;
 
-            //Reset camera info panel.
+            //Reset camera info panel and buttons.
             buttonStream.Enabled = true;
             buttonLoad.Enabled = true;
             buttonPlay.Enabled = false;
