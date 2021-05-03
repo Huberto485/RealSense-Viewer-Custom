@@ -1,9 +1,11 @@
 ﻿using System;
 using System.ComponentModel;
 using System.Windows.Forms;
+using System.Collections.Generic;
 using System.Drawing;
 using System.Threading;
 using System.IO;
+using System.Linq;
 using Intel.RealSense;
 
 namespace RealSense_Viewer_Custom
@@ -43,6 +45,8 @@ namespace RealSense_Viewer_Custom
         //Information about camera settings.
         private float distance = 0;
         private float distancePixel = 0;
+        private float distancePixelMax = 0;
+        private float distancePixelMin = 0;
 
         //Bitmaps for holding depth and color frames.
         public Bitmap depthImage;
@@ -65,6 +69,7 @@ namespace RealSense_Viewer_Custom
             InitializeDepthCheckWorker();
             InitializePlaybackWorker();
             loadFileNames();
+            pictureDepthBar.Image = Image.FromFile("D:/Program Files/VS Community Workspace/RealSense-Viewer-Custom/Graphics/depthBar.jpg");
             buttonPicture.Enabled = false;
             buttonRecord.Enabled = false;
             buttonPlay.Enabled = false;
@@ -118,12 +123,6 @@ namespace RealSense_Viewer_Custom
                     //Get file path.
                     var filePath = openFileDialog1.FileName;
 
-                    //Check whether a depth worker is enabled.
-                    if (depthCheckWorker.IsBusy == false)
-                    {
-                        depthCheckWorker.RunWorkerAsync();
-                    }
-
                     //Check if this was an action taken during depth streaming.
                     if (depthWorker.IsBusy == true)
                     {
@@ -133,10 +132,10 @@ namespace RealSense_Viewer_Custom
                     }
 
                     //Set variables.
+                    buttonStream.Enabled = false;
                     buttonLoad.Enabled = false;
                     buttonPlay.Enabled = true;
                     depthPlayback = true;
-                    labelCameraBox.Text = null;
                     paused = true;
 
                     //Pass the file path to a global variable.
@@ -161,7 +160,13 @@ namespace RealSense_Viewer_Custom
             //If this button was clicked while viewing media - cancel that thread.
             if (playbackWorker.IsBusy == true)
             {
+                buttonPlay.Enabled = false;
+                buttonLoad.Enabled = true;
+                labelFileName.Text = "No File Selected!";
+
                 playbackWorker.CancelAsync();
+                pipeline.Stop();
+                System.Diagnostics.Debug.WriteLine("playback stopped.");
             }
 
             //Check if the button is clicked while streaming or not.
@@ -183,6 +188,7 @@ namespace RealSense_Viewer_Custom
             else
             {
                 depthStreaming = false;
+                depthRecording = false;
                 depthWorker.CancelAsync();
                 buttonStream.Text = "Start Cam";
             }
@@ -228,6 +234,7 @@ namespace RealSense_Viewer_Custom
             }
             else
             {
+                waitingToStop = false;
                 paused = false;
                 buttonPlay.Text = "Pause";
             }
@@ -308,6 +315,10 @@ namespace RealSense_Viewer_Custom
                                             worker.ReportProgress(1);
                                         }
                                     }
+                                    pipeline.Stop();
+                                    pipeline.Start(cfgDefault);
+
+                                    labelListOfFiles.BeginInvoke(new InvokeDelegate(updateListOfFiles));
                                     random = new Random().Next(10000,99999);
                                 }
                                 else if (depthPicture == true)
@@ -340,13 +351,15 @@ namespace RealSense_Viewer_Custom
                                             depthPicture = false;
                                         }
                                     }
+                                    pipeline.Stop();
+                                    pipeline.Start(cfgDefault);
+
                                     restarted = true;
+                                    labelListOfFiles.BeginInvoke(new InvokeDelegate(updateListOfFiles));
                                     random = new Random().Next(10000, 99999);
                                 }
                                 else if (restarted == true)
                                 {
-                                    pipeline.Stop();
-                                    pipeline.Start(cfgDefault);
 
                                     while (restarted == true && depthStreaming == true)
                                     {
@@ -411,9 +424,9 @@ namespace RealSense_Viewer_Custom
                         worker.CancelAsync();
                     }
                 }
-                
+
                 //If at any time this point is reached, cancel worker action.
-                depthWorker.CancelAsync();
+                worker.CancelAsync();
                 buttonStream.BeginInvoke(new InvokeDelegate(buttonStreamInvokeOff));
                 labelConnect.BeginInvoke(new InvokeDelegate(labelConnectInvokeOff));
             }
@@ -448,6 +461,8 @@ namespace RealSense_Viewer_Custom
                 depthCheckWorker.CancelAsync();
             }
 
+            depthCheckWorker.Dispose();
+
             buttonRecord.Enabled = false;
             buttonPicture.Enabled = false;
             labelCameraBox.Text = "Camera is not streaming!";
@@ -460,6 +475,11 @@ namespace RealSense_Viewer_Custom
         /// ## INVOKE ELEMENTS FOR DEPTH STREAMING ##
         /// #########################################
         /// </summary>
+
+        private void updateListOfFiles()
+        {
+            loadFileNames();
+        }
 
         private void labelConnectInvokeOn()
         {
@@ -541,6 +561,12 @@ namespace RealSense_Viewer_Custom
                             distancePixel = depthArray[(mouseY - 1) * 640 + (mouseX - 1)];
                             distancePixel /= 1000;
 
+                            distancePixelMax = depthArray.Where(x => x < 4000).Max();
+                            distancePixelMax /= 1000;
+
+                            distancePixelMin = depthArray.Where(x => x != 0).DefaultIfEmpty().Min();
+                            distancePixelMin /= 1000;
+
                             worker.ReportProgress(1);
 
                             while (paused == true && depthPlayback == true)
@@ -550,6 +576,15 @@ namespace RealSense_Viewer_Custom
 
                                 distancePixel = depthArray[(mouseY - 1) * 640 + (mouseX - 1)];
                                 distancePixel /= 1000;
+
+                                distancePixelMax = depthArray.Where(x => x < 4000).Max();
+                                distancePixelMax /= 1000;
+
+                                distancePixelMin = depthArray.Where(x => x != 0).DefaultIfEmpty().Min();
+                                distancePixelMin /= 1000;
+
+                                labelMaxValue.BeginInvoke(new InvokeDelegate(updateMaxValue));
+                                labelMinValue.BeginInvoke(new InvokeDelegate(updateMinValue));
 
                                 labelDistancePixel.BeginInvoke(new InvokeDelegate(updatePixelDistance));
                                 labelPixel.BeginInvoke(new InvokeDelegate(updatePixelValue));
@@ -574,12 +609,18 @@ namespace RealSense_Viewer_Custom
                 {
                     labelDistancePixel.Text = string.Format("Distance: {0:N3} meters", distancePixel);
                     labelPixel.Text = string.Format("Pixel: {0},{1}", mouseX, mouseY);
+
+                    //Update scale values.
+                    labelMaxValue.Text = string.Format("Max: {0} meters", distancePixelMax);
+                    labelMinValue.Text = string.Format("Min: {0} meters", distancePixelMin);
                 }
                 else
                 {
                     //Change output to none.
                     labelDistancePixel.Text = "Distance: ---";
                     labelPixel.Text = "Pixel: ---,---";
+                    labelMaxValue.Text = "Max: ---";
+                    labelMinValue.Text = "Min: ---";
                 }
             }
             else
@@ -587,6 +628,8 @@ namespace RealSense_Viewer_Custom
                 //Change output to none.
                 labelDistancePixel.Text = "Distance: ---";
                 labelPixel.Text = "Pixel: ---,---";
+                labelMaxValue.Text = "Max: ---";
+                labelMinValue.Text = "Min: ---";
             }
         }
 
@@ -594,6 +637,8 @@ namespace RealSense_Viewer_Custom
         {
             labelDistancePixel.Text = "Distance: ---";
             labelPixel.Text = "Pixel: ---,---";
+            labelMaxValue.Text = "Max: ---";
+            labelMinValue.Text = "Min: ---";
         }
 
         /// <summary>
@@ -610,6 +655,16 @@ namespace RealSense_Viewer_Custom
         private void updatePixelValue()
         {
             labelPixel.Text = string.Format("Pixel: {0},{1}", mouseX, mouseY);
+        }
+
+        private void updateMaxValue()
+        {
+            labelMaxValue.Text = string.Format("Max: {0} meters", distancePixelMax);
+        }
+
+        private void updateMinValue()
+        {
+            labelMinValue.Text = string.Format("Min: {0} meters", distancePixelMin);
         }
 
         /// <summary>
@@ -703,19 +758,25 @@ namespace RealSense_Viewer_Custom
                         catch (Exception error)
                         {
                             //Exception thrown if there is no more data to stream - end of recording.
+                            pipeline.Stop();
                             depthPlayback = false;
                             MessageBox.Show("End of recording!", "Recording finished!");
                         }
                     }
                     i++;
                 }
-                pipeline.Stop();
+                depthPlayback = false;
                 worker.CancelAsync();
             }
         }
 
         private void playbackWorker_ProgressChanged (object sender, ProgressChangedEventArgs e)
         {
+            if (labelCameraBox.Text != null)
+            {
+                labelCameraBox.Text = null;
+            }
+
             //Check progress flags.
             if (e.ProgressPercentage == 1)
             {
@@ -748,6 +809,7 @@ namespace RealSense_Viewer_Custom
             paused = true;
 
             //Reset camera info panel.
+            buttonStream.Enabled = true;
             buttonLoad.Enabled = true;
             buttonPlay.Enabled = false;
             pictureBox1.Image = null;

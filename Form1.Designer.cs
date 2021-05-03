@@ -50,12 +50,16 @@ namespace RealSense_Viewer_Custom
             this.pictureBox6 = new System.Windows.Forms.PictureBox();
             this.pictureBox3 = new System.Windows.Forms.PictureBox();
             this.labelListOfFiles = new System.Windows.Forms.Label();
+            this.labelMaxValue = new System.Windows.Forms.Label();
+            this.labelMinValue = new System.Windows.Forms.Label();
+            this.pictureDepthBar = new System.Windows.Forms.PictureBox();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox2)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox4)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox5)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox6)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox3)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureDepthBar)).BeginInit();
             this.SuspendLayout();
             // 
             // pictureBox1
@@ -269,12 +273,44 @@ namespace RealSense_Viewer_Custom
             this.labelListOfFiles.Size = new System.Drawing.Size(0, 15);
             this.labelListOfFiles.TabIndex = 20;
             // 
+            // labelMaxValue
+            // 
+            this.labelMaxValue.AutoSize = true;
+            this.labelMaxValue.Location = new System.Drawing.Point(190, 333);
+            this.labelMaxValue.Name = "labelMaxValue";
+            this.labelMaxValue.Size = new System.Drawing.Size(51, 15);
+            this.labelMaxValue.TabIndex = 21;
+            this.labelMaxValue.Text = "Max: ---";
+            // 
+            // labelMinValue
+            // 
+            this.labelMinValue.AutoSize = true;
+            this.labelMinValue.Location = new System.Drawing.Point(190, 529);
+            this.labelMinValue.Name = "labelMinValue";
+            this.labelMinValue.Size = new System.Drawing.Size(49, 15);
+            this.labelMinValue.TabIndex = 22;
+            this.labelMinValue.Text = "Min: ---";
+            // 
+            // pictureDepthBar
+            // 
+            this.pictureDepthBar.ImageLocation = "";
+            this.pictureDepthBar.InitialImage = null;
+            this.pictureDepthBar.Location = new System.Drawing.Point(125, 333);
+            this.pictureDepthBar.Name = "pictureDepthBar";
+            this.pictureDepthBar.Size = new System.Drawing.Size(59, 211);
+            this.pictureDepthBar.TabIndex = 23;
+            this.pictureDepthBar.TabStop = false;
+            this.pictureDepthBar.WaitOnLoad = true;
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.GhostWhite;
             this.ClientSize = new System.Drawing.Size(1008, 592);
+            this.Controls.Add(this.pictureDepthBar);
+            this.Controls.Add(this.labelMinValue);
+            this.Controls.Add(this.labelMaxValue);
             this.Controls.Add(this.labelListOfFiles);
             this.Controls.Add(this.labelCameraBox);
             this.Controls.Add(this.labelDistancePixel);
@@ -304,6 +340,7 @@ namespace RealSense_Viewer_Custom
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox5)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox6)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox3)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureDepthBar)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -341,6 +378,10 @@ namespace RealSense_Viewer_Custom
         private System.Windows.Forms.PictureBox pictureBox6;
         private System.Windows.Forms.PictureBox pictureBox3;
         private System.Windows.Forms.Label labelListOfFiles;
+        private System.Windows.Forms.Label labelMaxValue;
+        private System.Windows.Forms.Label label2;
+        private System.Windows.Forms.PictureBox pictureDepthBar;
+        private System.Windows.Forms.Label labelMinValue;
     }
 }
 
