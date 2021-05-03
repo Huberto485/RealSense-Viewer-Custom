@@ -64,6 +64,7 @@ namespace RealSense_Viewer_Custom
             InitializeDepthWorker();
             InitializeDepthCheckWorker();
             InitializePlaybackWorker();
+            loadFileNames();
             buttonPicture.Enabled = false;
             buttonRecord.Enabled = false;
             buttonPlay.Enabled = false;
@@ -74,8 +75,36 @@ namespace RealSense_Viewer_Custom
 
         }
 
+        private void loadFileNames()
+        {
+
+            string[] listOfFiles = Directory.GetFiles(Directory.GetCurrentDirectory() + "/Media/");
+            labelListOfFiles.Text = "Your recordings:" + "\n";
+
+            if (listOfFiles.Length == 0)
+            {
+                labelListOfFiles.Text = "There are no previous recordings!";
+            }
+            else if (listOfFiles.Length > 0 && listOfFiles.Length < 3)
+            {
+                for (int i = 0; i < listOfFiles.Length; i++)
+                {
+                    labelListOfFiles.Text += listOfFiles[i].Substring(listOfFiles[i].Length - 15) + "\n";
+                }
+            }
+            else
+            {
+                for (int i = 0; i < 3; i++)
+                {
+                    labelListOfFiles.Text += listOfFiles[i].Substring(listOfFiles[i].Length - 15) + "\n";
+                }
+            }
+        }
+
         /// <summary>
-        /// DEPTH FUNCTIONALITY
+        /// #########################
+        /// ## DEPTH FUNCTIONALITY ##
+        /// #########################
         /// </summary>
 
         //Loading depth file functionality.
@@ -427,7 +456,9 @@ namespace RealSense_Viewer_Custom
         }
 
         /// <summary>
-        /// INVOKE ELEMENTS FOR DEPTH STREAMING
+        /// #########################################
+        /// ## INVOKE ELEMENTS FOR DEPTH STREAMING ##
+        /// #########################################
         /// </summary>
 
         private void labelConnectInvokeOn()
@@ -446,7 +477,9 @@ namespace RealSense_Viewer_Custom
         }
 
         /// <summary>
-        /// PIXEL DEPTH CHECK FUNCTIONALITY
+        /// #####################################
+        /// ## PIXEL DEPTH CHECK FUNCTIONALITY ##
+        /// #####################################
         /// </summary>
 
         private void pictureBox1_MouseHover(object sender, EventArgs e)
@@ -564,7 +597,9 @@ namespace RealSense_Viewer_Custom
         }
 
         /// <summary>
-        /// DEPTH CHECK WORKER DELEGATES
+        /// ##################################
+        /// ## DEPTH CHECK WORKER DELEGATES ##
+        /// ##################################
         /// </summary>
 
         private void updatePixelDistance()
@@ -578,7 +613,9 @@ namespace RealSense_Viewer_Custom
         }
 
         /// <summary>
-        /// PLAYBACK FUNCTIONALITY
+        /// ############################
+        /// ## PLAYBACK FUNCTIONALITY ##
+        /// ############################
         /// </summary>
 
         private void InitializePlaybackWorker()
