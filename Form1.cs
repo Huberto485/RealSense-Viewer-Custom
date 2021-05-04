@@ -31,7 +31,7 @@ namespace RealSense_Viewer_Custom
 
         //Variable to hold the file location to load.
         private string file;
-        private int timer;
+        private float timer;
 
         //Pipeline variable for global camera information - required as depth workers and checker can communicate same pipeline info.
         private Pipeline pipeline = new Pipeline();
@@ -114,6 +114,7 @@ namespace RealSense_Viewer_Custom
                 labelMaxValue.BackColor = Color.FromArgb(89, 89, 89);
                 labelMinValue.BackColor = Color.FromArgb(89, 89, 89);
                 labelDistancePixel.BackColor = Color.FromArgb(89, 89, 89);
+                labelTimer.BackColor = Color.FromArgb(89, 89, 89);
 
                 //Label Text
                 labelConnect.ForeColor = Color.White;
@@ -124,7 +125,7 @@ namespace RealSense_Viewer_Custom
                 labelMaxValue.ForeColor = Color.White;
                 labelMinValue.ForeColor = Color.White;
                 labelDistancePixel.ForeColor = Color.White;
-
+                labelTimer.ForeColor = Color.White;
             }
             else
             {
@@ -157,6 +158,7 @@ namespace RealSense_Viewer_Custom
                 labelMaxValue.BackColor = Color.FromArgb(128, 106, 200);
                 labelMinValue.BackColor = Color.FromArgb(128, 106, 200);
                 labelDistancePixel.BackColor = Color.FromArgb(128, 106, 200);
+                labelTimer.BackColor = Color.FromArgb(128, 106, 200);
 
                 //Label Text
                 labelConnect.ForeColor = Color.Black;
@@ -167,6 +169,7 @@ namespace RealSense_Viewer_Custom
                 labelMaxValue.ForeColor = Color.Black;
                 labelMinValue.ForeColor = Color.Black;
                 labelDistancePixel.ForeColor = Color.Black;
+                labelTimer.ForeColor = Color.Black;
             }
         }
 
@@ -259,7 +262,6 @@ namespace RealSense_Viewer_Custom
 
                 playbackWorker.CancelAsync();
                 pipeline.Stop();
-                System.Diagnostics.Debug.WriteLine("playback stopped.");
             }
 
             //Check if the button is clicked while streaming or not.
@@ -387,10 +389,17 @@ namespace RealSense_Viewer_Custom
                                         + new Random().Next(10000, 99999) + "_video.bag");
                                     pipeline.Start(cfgCapture);
 
-                                    
+                                    DateTime start = DateTime.Now;
+                                    DateTime current = DateTime.Now;
 
                                     while (depthRecording == true && depthStreaming == true)
                                     {
+                                        current = DateTime.Now;
+                                        TimeSpan span = current - start;
+
+                                        timer = (int)span.TotalMilliseconds;
+                                        timer /= 1000;
+
                                         //Get camera depth from current frame.
                                         using (var frameSet = pipeline.WaitForFrames())
                                         using (var frame = frameSet.DepthFrame)
@@ -410,6 +419,9 @@ namespace RealSense_Viewer_Custom
                                             worker.ReportProgress(1);
                                         }
                                     }
+
+                                    timer = 0;
+
                                     //Finish video and restart with default settings.
                                     pipeline.Stop();
                                     pipeline.Start(cfgDefault);
@@ -537,6 +549,15 @@ namespace RealSense_Viewer_Custom
                 //If flag is 1, output depth.
                 labelDistance.Text = string.Format("Centre-Point Distance: {0:N3} meters", distance);
                 pictureBox1.Image = depthImage;
+
+                if (timer > 0)
+                {
+                    labelTimer.Text = string.Format("Recording: {0:N2}s", timer);
+                }
+                else
+                {
+                    labelTimer.Text = null;
+                }
             }
             else
             {
@@ -769,6 +790,11 @@ namespace RealSense_Viewer_Custom
             labelMinValue.Text = string.Format("Min: {0} meters", distancePixelMin);
         }
 
+        private void updateTimer()
+        {
+            labelTimer.Text = null;
+        }
+
         /// <summary>
         /// ############################
         /// ## PLAYBACK FUNCTIONALITY ##
@@ -799,73 +825,83 @@ namespace RealSense_Viewer_Custom
 
             using BackgroundWorker worker = sender as BackgroundWorker;
             {
-                //Count repeats.
-                var i = 0;
                 while (depthPlayback == true)
                 {
-                    //Check if video is being replayed automatically.
-                    if ( i > 0)
+                    try
                     {
-                        pipeline.Stop();
-                    }
-                    //Create a playback device with new settings.
-                    cfgPlayback.EnableDeviceFromFile(@file, repeat: false);
-                    using (var device = pipeline.Start(cfgPlayback).Device)
-                    using (var playback = PlaybackDevice.FromDevice(device))
-                    {
-                        try
+                        //Create a playback device with new settings.
+                        cfgPlayback.EnableDeviceFromFile(@file, repeat: false);
+                        using (var device = pipeline.Start(cfgPlayback).Device)
+                        using (var playback = PlaybackDevice.FromDevice(device))
                         {
-                            while (depthPlayback == true)
-                            {
-                                //Get camera depth from current frame.
-                                using (var frameSet = pipeline.WaitForFrames())
-                                using (var frame = frameSet.DepthFrame)
+                            try
+                            {   
+                                DateTime start = DateTime.Now;
+                                DateTime current = DateTime.Now;
+                                while (depthPlayback == true)
                                 {
-                                    //Apply filters to the frame.
-                                    var filteredFrame = thresholdFilter.Process(frame).DisposeWith(frameSet);
-                                    filteredFrame = disparityTransform.Process(filteredFrame).DisposeWith(frameSet);
-                                    filteredFrame = temporalFilter.Process(filteredFrame).DisposeWith(frameSet);
-                                    filteredFrame = colorizer.Process(filteredFrame).DisposeWith(frameSet);
-
-                                    //Put metadata from depth stream into its Bitmap.
-                                    depthImage = new Bitmap(frame.Width, frame.Height,
-                                        1920, System.Drawing.Imaging.PixelFormat.Format24bppRgb, filteredFrame.Data);
-
-                                    distance = frame.GetDistance(frame.Width / 2, frame.Height / 2);
-
-                                    //Update camera info panel.
-                                    worker.ReportProgress(1);
-                                }
-
-                                //Look out for a stop flag.
-                                if (waitingToStop == true)
-                                {
-                                    //Reset the flag.
-                                    waitingToStop = false;
-
-                                    //Pause the file reader.
-                                    playback.Pause();
-
-                                    //Deactivate thread until button is clicked again.
-                                    while (paused == true)
+                                    //Get camera depth from current frame.
+                                    using (var frameSet = pipeline.WaitForFrames())
+                                    using (var frame = frameSet.DepthFrame)
                                     {
-                                        Thread.Sleep(25);
+                                        current = DateTime.Now;
+                                        TimeSpan span = current - start;
+
+                                        timer = (int)span.TotalMilliseconds;
+                                        timer /= 1000;
+
+                                        //Apply filters to the frame.
+                                        var filteredFrame = thresholdFilter.Process(frame).DisposeWith(frameSet);
+                                        filteredFrame = disparityTransform.Process(filteredFrame).DisposeWith(frameSet);
+                                        filteredFrame = temporalFilter.Process(filteredFrame).DisposeWith(frameSet);
+                                        filteredFrame = colorizer.Process(filteredFrame).DisposeWith(frameSet);
+
+                                        //Put metadata from depth stream into its Bitmap.
+                                        depthImage = new Bitmap(frame.Width, frame.Height,
+                                            1920, System.Drawing.Imaging.PixelFormat.Format24bppRgb, filteredFrame.Data);
+
+                                        distance = frame.GetDistance(frame.Width / 2, frame.Height / 2);
+
+                                        //Update camera info panel.
+                                        worker.ReportProgress(1);
                                     }
 
-                                    //Resume the file reader.
-                                    playback.Resume();
+                                    //Look out for a stop flag.
+                                    if (waitingToStop == true)
+                                    {
+                                        //Reset the flag.
+                                        waitingToStop = false;
+
+                                        //Pause the file reader.
+                                        playback.Pause();
+
+                                        //Deactivate thread until button is clicked again.
+                                        while (paused == true)
+                                        {
+                                            Thread.Sleep(25);
+                                        }
+
+                                        //Resume the file reader.
+                                        playback.Resume();
+                                    }
                                 }
                             }
-                        }
-                        catch (Exception error)
-                        {
-                            //Exception thrown if there is no more data to stream - end of recording.
-                            pipeline.Stop();
-                            depthPlayback = false;
-                            MessageBox.Show("End of recording!", "Recording finished!");
+                            catch (Exception error)
+                            {
+                                //Exception thrown if there is no more data to stream - end of recording.
+                                pipeline.Stop();
+                                timer = 0;
+                                labelTimer.BeginInvoke(new InvokeDelegate(updateTimer));
+                                depthPlayback = false;
+                                MessageBox.Show("End of recording!", "Recording finished!");
+                            }
                         }
                     }
-                    i++;
+                    catch (Exception error)
+                    {
+                        depthPlayback = false;
+                        MessageBox.Show("File is corrupted due to an indexing error!", "Fatal");
+                    }
                 }
                 depthPlayback = false;
                 worker.CancelAsync();
@@ -885,6 +921,15 @@ namespace RealSense_Viewer_Custom
                 //If flag is 1, output depth.
                 labelDistance.Text = string.Format("Centre-Point Distance: {0:N3} meters", distance);
                 pictureBox1.Image = depthImage;
+
+                if (timer > 0)
+                {
+                    labelTimer.Text = string.Format("Time: {0:N2}s", timer);
+                }
+                else
+                {
+                    labelTimer.Text = null;
+                }
             }
             else
             {

@@ -321,11 +321,10 @@ namespace RealSense_Viewer_Custom
             // 
             this.labelTimer.AutoSize = true;
             this.labelTimer.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(128)))), ((int)(((byte)(106)))), ((int)(((byte)(200)))));
-            this.labelTimer.Location = new System.Drawing.Point(845, 517);
+            this.labelTimer.Location = new System.Drawing.Point(800, 517);
             this.labelTimer.Name = "labelTimer";
-            this.labelTimer.Size = new System.Drawing.Size(38, 15);
+            this.labelTimer.Size = new System.Drawing.Size(0, 15);
             this.labelTimer.TabIndex = 25;
-            this.labelTimer.Text = "label1";
             // 
             // Form1
             // 
