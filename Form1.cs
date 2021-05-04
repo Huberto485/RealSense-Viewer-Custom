@@ -16,7 +16,6 @@ namespace RealSense_Viewer_Custom
         private bool depthPlayback = false;
         private bool depthRecording = false;
         private bool depthStreaming = false;
-        private bool restarted = false;
         private bool waitingToStop = true;
         private bool paused = false;
 
@@ -295,13 +294,11 @@ namespace RealSense_Viewer_Custom
             //Check if the button was previously clicked.
             if (depthRecording != true)
             {
-                restarted = false;
                 depthRecording = true;
                 buttonRecord.Text = "Stop";
             }
             else
             {
-                restarted = true;
                 depthRecording = false;
                 buttonRecord.Text = "Record";
             }
@@ -313,7 +310,6 @@ namespace RealSense_Viewer_Custom
             if (depthPicture != true)
             {
                 depthPicture = true;
-                restarted = false;
             }
         }
 
@@ -389,14 +385,17 @@ namespace RealSense_Viewer_Custom
                                         + new Random().Next(10000, 99999) + "_video.bag");
                                     pipeline.Start(cfgCapture);
 
+                                    //Get start time and initialize current time.
                                     DateTime start = DateTime.Now;
                                     DateTime current = DateTime.Now;
 
                                     while (depthRecording == true && depthStreaming == true)
                                     {
+                                        //Update current time and compare difference to the start date.
                                         current = DateTime.Now;
                                         TimeSpan span = current - start;
 
+                                        //Set the time to a global variable.
                                         timer = (int)span.TotalMilliseconds;
                                         timer /= 1000;
 
@@ -420,6 +419,7 @@ namespace RealSense_Viewer_Custom
                                         }
                                     }
 
+                                    //At the end of the recording, set the timer to 0.
                                     timer = 0;
 
                                     //Finish video and restart with default settings.
@@ -427,6 +427,8 @@ namespace RealSense_Viewer_Custom
                                     pipeline.Start(cfgDefault);
 
                                     labelListOfFiles.BeginInvoke(new InvokeDelegate(updateListOfFiles));
+
+                                    //Set a new random value.
                                     random = new Random().Next(10000,99999);
                                 }
                                 else if (depthPicture == true)
@@ -463,34 +465,8 @@ namespace RealSense_Viewer_Custom
                                     pipeline.Stop();
                                     pipeline.Start(cfgDefault);
 
-                                    restarted = true;
                                     labelListOfFiles.BeginInvoke(new InvokeDelegate(updateListOfFiles));
                                     random = new Random().Next(10000, 99999);
-                                }
-                                else if (restarted == true)
-                                {
-
-                                    while (restarted == true && depthStreaming == true)
-                                    {
-                                        //Get camera depth from current frame.
-                                        using (var frameSet = pipeline.WaitForFrames())
-                                        using (var frame = frameSet.DepthFrame)
-                                        {
-                                            //Apply filters to the frame.
-                                            var filteredFrame = thresholdFilter.Process(frame).DisposeWith(frameSet);
-                                            filteredFrame = disparityTransform.Process(filteredFrame).DisposeWith(frameSet);
-                                            filteredFrame = temporalFilter.Process(filteredFrame).DisposeWith(frameSet);
-                                            filteredFrame = colorizer.Process(filteredFrame).DisposeWith(frameSet);
-
-                                            //Put metadata from depth stream into its Bitmap.
-                                            depthImage = new Bitmap(frame.Width, frame.Height,
-                                                1920, System.Drawing.Imaging.PixelFormat.Format24bppRgb, filteredFrame.Data);
-
-                                            distance = frame.GetDistance(frame.Width / 2, frame.Height / 2);
-                                            //Update camera info panel.
-                                            worker.ReportProgress(1);
-                                        }
-                                    }
                                 }
                                 else
                                 {
@@ -532,6 +508,10 @@ namespace RealSense_Viewer_Custom
                         worker.ReportProgress(0);
                         worker.CancelAsync();
                     }
+                }
+                else
+                {
+                    MessageBox.Show("No camera connected!", "Camera");
                 }
 
                 //If at any time this point is reached, cancel worker action.
