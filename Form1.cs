@@ -817,19 +817,22 @@ namespace RealSense_Viewer_Custom
                             try
                             {   
                                 DateTime start = DateTime.Now;
-                                DateTime current = DateTime.Now;
+                                DateTime current;
+
+                                //Pause starting time and ending time.
+                                DateTime pauseStart;
+                                DateTime pauseEnd;
+
+                                //Calculate pause and store the length of pause in total.
+                                TimeSpan pause;
+                                var totalPause = 0;
+
                                 while (depthPlayback == true)
                                 {
                                     //Get camera depth from current frame.
                                     using (var frameSet = pipeline.WaitForFrames())
                                     using (var frame = frameSet.DepthFrame)
                                     {
-                                        current = DateTime.Now;
-                                        TimeSpan span = current - start;
-
-                                        timer = (int)span.TotalMilliseconds;
-                                        timer /= 1000;
-
                                         //Apply filters to the frame.
                                         var filteredFrame = thresholdFilter.Process(frame).DisposeWith(frameSet);
                                         filteredFrame = disparityTransform.Process(filteredFrame).DisposeWith(frameSet);
@@ -849,6 +852,9 @@ namespace RealSense_Viewer_Custom
                                     //Look out for a stop flag.
                                     if (waitingToStop == true)
                                     {
+                                        //Get pause start time.
+                                        pauseStart = DateTime.Now;
+
                                         //Reset the flag.
                                         waitingToStop = false;
 
@@ -861,9 +867,24 @@ namespace RealSense_Viewer_Custom
                                             Thread.Sleep(25);
                                         }
 
+                                        //Get pause ending time.
+                                        pauseEnd = DateTime.Now;
+
+                                        //Calculate pause in milliseconds and add to total paused time.
+                                        pause = pauseEnd - pauseStart;
+                                        totalPause += (int)pause.TotalMilliseconds;
+
                                         //Resume the file reader.
                                         playback.Resume();
                                     }
+
+                                    //Work out the current length of the recording.
+                                    current = DateTime.Now;
+                                    TimeSpan span = current - start;
+
+                                    //Timer is showing the total time of the recording minus the time paused.
+                                    timer = (int)span.TotalMilliseconds - totalPause;
+                                    timer /= 1000;
                                 }
                             }
                             catch (Exception error)
