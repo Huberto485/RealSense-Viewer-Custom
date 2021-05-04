@@ -1,7 +1,6 @@
 ﻿using System;
 using System.ComponentModel;
 using System.Windows.Forms;
-using System.Collections.Generic;
 using System.Drawing;
 using System.Threading;
 using System.IO;
@@ -32,6 +31,7 @@ namespace RealSense_Viewer_Custom
 
         //Variable to hold the file location to load.
         private string file;
+        private int timer;
 
         //Pipeline variable for global camera information - required as depth workers and checker can communicate same pipeline info.
         private Pipeline pipeline = new Pipeline();
@@ -78,6 +78,96 @@ namespace RealSense_Viewer_Custom
         private void Form1_Load(object sender, EventArgs e)
         {
 
+        }
+
+        //Window colour mode, this will switch from light mode, to dark mode, and back.
+        private void buttonMode_Click(object sender, EventArgs e)
+        {
+            if(buttonMode.Text == "Dark Mode")
+            {
+                //Dark mode colours used (light grey (127, 127, 127), grey(89, 89, 89), dark grey(59, 59, 59)).
+
+                //Change button text.
+                buttonMode.Text = "Lite Mode";
+
+                //Window
+                BackColor = Color.FromArgb(59,59,59);
+
+                //Panels
+                pictureBox1.BackColor = Color.FromArgb(127, 127, 127);
+                pictureBox3.BackColor = Color.FromArgb(127, 127, 127);
+                pictureBox4.BackColor = Color.FromArgb(127, 127, 127);
+                pictureBox2.BackColor = Color.FromArgb(89, 89, 89);
+                pictureBox5.BackColor = Color.FromArgb(89, 89, 89);
+                pictureBox6.BackColor = Color.FromArgb(89, 89, 89);
+                pictureDepthBar.BackColor = Color.FromArgb(89, 89, 89);
+
+                //Labels
+                labelMenu1.BackColor = Color.FromArgb(127, 127, 127);
+                labelCameraBox.BackColor = Color.FromArgb(127, 127, 127);
+                labelMenu2.BackColor = Color.FromArgb(127, 127, 127);
+                labelConnect.BackColor = Color.FromArgb(89, 89, 89);
+                labelDistance.BackColor = Color.FromArgb(89, 89, 89);
+                labelPixel.BackColor = Color.FromArgb(89, 89, 89);
+                labelFileName.BackColor = Color.FromArgb(89, 89, 89);
+                labelListOfFiles.BackColor = Color.FromArgb(89, 89, 89);
+                labelMaxValue.BackColor = Color.FromArgb(89, 89, 89);
+                labelMinValue.BackColor = Color.FromArgb(89, 89, 89);
+                labelDistancePixel.BackColor = Color.FromArgb(89, 89, 89);
+
+                //Label Text
+                labelConnect.ForeColor = Color.White;
+                labelDistance.ForeColor = Color.White;
+                labelPixel.ForeColor = Color.White;
+                labelFileName.ForeColor = Color.White;
+                labelListOfFiles.ForeColor = Color.White;
+                labelMaxValue.ForeColor = Color.White;
+                labelMinValue.ForeColor = Color.White;
+                labelDistancePixel.ForeColor = Color.White;
+
+            }
+            else
+            {
+                //Light mode colours used (GhostWhite, light purple(192, 192, 255), dark purple (128, 106, 200)).
+
+                //Change button text.
+                buttonMode.Text = "Dark Mode";
+
+                //Window
+                BackColor = Color.GhostWhite;
+
+                //Panels
+                pictureBox1.BackColor = Color.FromArgb(192, 192, 255);
+                pictureBox3.BackColor = Color.FromArgb(192, 192, 255);
+                pictureBox4.BackColor = Color.FromArgb(192, 192, 255);
+                pictureBox2.BackColor = Color.FromArgb(128, 106, 200);
+                pictureBox5.BackColor = Color.FromArgb(128, 106, 200);
+                pictureBox6.BackColor = Color.FromArgb(128, 106, 200);
+                pictureDepthBar.BackColor = Color.FromArgb(128, 106, 200);
+
+                //Labels
+                labelMenu1.BackColor = Color.FromArgb(192, 192, 255);
+                labelCameraBox.BackColor = Color.FromArgb(192, 192, 255);
+                labelMenu2.BackColor = Color.FromArgb(192, 192, 255);
+                labelConnect.BackColor = Color.FromArgb(128, 106, 200);
+                labelDistance.BackColor = Color.FromArgb(128, 106, 200);
+                labelPixel.BackColor = Color.FromArgb(128, 106, 200);
+                labelFileName.BackColor = Color.FromArgb(128, 106, 200);
+                labelListOfFiles.BackColor = Color.FromArgb(128, 106, 200);
+                labelMaxValue.BackColor = Color.FromArgb(128, 106, 200);
+                labelMinValue.BackColor = Color.FromArgb(128, 106, 200);
+                labelDistancePixel.BackColor = Color.FromArgb(128, 106, 200);
+
+                //Label Text
+                labelConnect.ForeColor = Color.Black;
+                labelDistance.ForeColor = Color.Black;
+                labelPixel.ForeColor = Color.Black;
+                labelFileName.ForeColor = Color.Black;
+                labelListOfFiles.ForeColor = Color.Black;
+                labelMaxValue.ForeColor = Color.Black;
+                labelMinValue.ForeColor = Color.Black;
+                labelDistancePixel.ForeColor = Color.Black;
+            }
         }
 
         private void loadFileNames()
@@ -296,6 +386,8 @@ namespace RealSense_Viewer_Custom
                                     cfgCapture.EnableRecordToFile(Directory.GetCurrentDirectory() + "/Media/" 
                                         + new Random().Next(10000, 99999) + "_video.bag");
                                     pipeline.Start(cfgCapture);
+
+                                    
 
                                     while (depthRecording == true && depthStreaming == true)
                                     {

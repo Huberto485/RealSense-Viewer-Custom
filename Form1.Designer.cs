@@ -53,6 +53,8 @@ namespace RealSense_Viewer_Custom
             this.labelMaxValue = new System.Windows.Forms.Label();
             this.labelMinValue = new System.Windows.Forms.Label();
             this.pictureDepthBar = new System.Windows.Forms.PictureBox();
+            this.buttonMode = new System.Windows.Forms.Button();
+            this.labelTimer = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox2)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox4)).BeginInit();
@@ -295,6 +297,7 @@ namespace RealSense_Viewer_Custom
             // 
             // pictureDepthBar
             // 
+            this.pictureDepthBar.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(128)))), ((int)(((byte)(106)))), ((int)(((byte)(200)))));
             this.pictureDepthBar.ImageLocation = "";
             this.pictureDepthBar.InitialImage = null;
             this.pictureDepthBar.Location = new System.Drawing.Point(21, 306);
@@ -304,12 +307,34 @@ namespace RealSense_Viewer_Custom
             this.pictureDepthBar.TabStop = false;
             this.pictureDepthBar.WaitOnLoad = true;
             // 
+            // buttonMode
+            // 
+            this.buttonMode.Location = new System.Drawing.Point(12, 557);
+            this.buttonMode.Name = "buttonMode";
+            this.buttonMode.Size = new System.Drawing.Size(75, 23);
+            this.buttonMode.TabIndex = 24;
+            this.buttonMode.Text = "Dark Mode";
+            this.buttonMode.UseVisualStyleBackColor = true;
+            this.buttonMode.Click += new System.EventHandler(this.buttonMode_Click);
+            // 
+            // labelTimer
+            // 
+            this.labelTimer.AutoSize = true;
+            this.labelTimer.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(128)))), ((int)(((byte)(106)))), ((int)(((byte)(200)))));
+            this.labelTimer.Location = new System.Drawing.Point(845, 517);
+            this.labelTimer.Name = "labelTimer";
+            this.labelTimer.Size = new System.Drawing.Size(38, 15);
+            this.labelTimer.TabIndex = 25;
+            this.labelTimer.Text = "label1";
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.GhostWhite;
             this.ClientSize = new System.Drawing.Size(1008, 592);
+            this.Controls.Add(this.labelTimer);
+            this.Controls.Add(this.buttonMode);
             this.Controls.Add(this.pictureDepthBar);
             this.Controls.Add(this.labelMinValue);
             this.Controls.Add(this.labelMaxValue);
@@ -360,6 +385,7 @@ namespace RealSense_Viewer_Custom
         private System.Windows.Forms.Button buttonPicture;
         private System.Windows.Forms.Button buttonLoad;
         private System.Windows.Forms.Button buttonStream;
+        private System.Windows.Forms.Button buttonMode;
 
         /// Labels
         private System.Windows.Forms.Label labelMenu1;
@@ -368,22 +394,26 @@ namespace RealSense_Viewer_Custom
         private System.Windows.Forms.Label labelConnect;
         private System.Windows.Forms.Label labelDistance;
         private System.Windows.Forms.Label labelPixel;
-
+        private System.Windows.Forms.Label labelCameraBox;
+        private System.Windows.Forms.Label labelListOfFiles;
+        private System.Windows.Forms.Label labelMaxValue;
+        private System.Windows.Forms.Label labelMinValue;
+        private System.Windows.Forms.Label labelDistancePixel;
+        
         /// Images
         private System.Windows.Forms.PictureBox pictureBox1;
         private System.Windows.Forms.PictureBox pictureBox2;
         private System.Windows.Forms.PictureBox pictureBox4;
         private System.Windows.Forms.PictureBox pictureBox5;
-        private System.Windows.Forms.Label labelDistancePixel;
-        private System.Windows.Forms.OpenFileDialog openFileDialog1;
-        private System.Windows.Forms.Label labelCameraBox;
         private System.Windows.Forms.PictureBox pictureBox6;
         private System.Windows.Forms.PictureBox pictureBox3;
-        private System.Windows.Forms.Label labelListOfFiles;
-        private System.Windows.Forms.Label labelMaxValue;
-        private System.Windows.Forms.Label label2;
         private System.Windows.Forms.PictureBox pictureDepthBar;
-        private System.Windows.Forms.Label labelMinValue;
+        
+        
+
+        //Other
+        private System.Windows.Forms.OpenFileDialog openFileDialog1;
+        private System.Windows.Forms.Label labelTimer;
     }
 }
 
