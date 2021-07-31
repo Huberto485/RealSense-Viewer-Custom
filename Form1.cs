@@ -68,7 +68,7 @@ namespace RealSense_Viewer_Custom
             InitializeDepthCheckWorker();
             InitializePlaybackWorker();
             loadFileNames();
-            pictureDepthBar.Image = Image.FromFile("D:/Program Files/VS Community Workspace/RealSense-Viewer-Custom/Graphics/depthBar.jpg");
+            pictureDepthBar.Image = Image.FromFile(Directory.GetCurrentDirectory() + "/Graphics/depthBar.jpg");
             buttonPicture.Enabled = false;
             buttonRecord.Enabled = false;
             buttonPlay.Enabled = false;
