@@ -18,7 +18,6 @@ Current limitations:
 -A loaded video has to be viewed until the end.
 -An image is effectively a very short video - same limitation as above.
 -Sometimes videos or images cannot be loaded due to an indexing bug from realsense2 SDK.
--Other minor errors.
 
 This viewer has been developed by one person with limited knowledge of C# so any help/tips are welcome!
 You can email me at thehubert.antczak@gmail.com for questions and other things.
